@@ -57,9 +57,8 @@ class WordCamp_Payments {
 			return;
 		}
 
-		$post_meta = get_post_custom( $post->ID );
 		$requester = get_user_by( 'id', $post->post_author );
-		$wordcamp  = get_post( $post_meta['_camppayments_wordcamp'][0] );
+		$wordcamp  = $_POST['wordcamp'];
 
 		$message = sprintf(
 			"A new payment request has been made.
@@ -73,7 +72,7 @@ class WordCamp_Payments {
 
 			is_a( $wordcamp, 'WP_Post' ) ? $wordcamp->post_title : '',
 			$post->post_title,
-			$post_meta['_camppayments_due_by'][0],  // todo pull from $_POST
+			$_POST['due_by'],
 			$requester->get( 'display_name' ),
 			admin_url( 'post.php?post='. $post->ID .'&action=edit' )
 		);
