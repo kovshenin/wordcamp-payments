@@ -172,7 +172,7 @@ class WCP_Payment_Request {
 		$this->render_text_input( $post, 'Beneficiary’s Bank SWIFT BIC', 'bank_bic' );
 		$this->render_text_input( $post, 'Beneficiary’s Name', 'beneficiary_name' );
 		$this->render_text_input( $post, 'Beneficiary’s Address', 'beneficiary_address' );        // todo multiple
-		// todo account number?
+		// todo add account number
 		echo '</table>';
 	}
 
@@ -349,7 +349,7 @@ class WCP_Payment_Request {
 				break;
 
 			case 'due_by':
-				if ( $value = get_post_meta( $post->ID, '_camppayments_due_by', true ) ) {  // todo broken
+				if ( $value = get_post_meta( $post->ID, '_camppayments_due_by', true ) ) {
 					$value = date( 'F jS, Y', $value );
 				}
 				break;
