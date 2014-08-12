@@ -581,6 +581,7 @@ class WCP_Payment_Request {
 	}
 
 	public function save_payment( $post_id ) {
+		// Verify nonces
 		$nonces = array( 'general_info_nonce', 'payment_details_nonce', 'vendor_details_nonce' );
 
 		foreach ( $nonces as $nonce ) {
@@ -589,30 +590,49 @@ class WCP_Payment_Request {
 			}
 		}
 
-		// todo refactor to sanitize automatically based on field type
+		// Sanitize and save field values
+		foreach ( $_POST as $key => $unsafe_value ) {
+			switch ( $key ) {
+				case 'wordcamp':
+					$safe_value = absint( $unsafe_value );
+					break;
 
-		// General Information
-		update_post_meta( $post_id, '_camppayments_wordcamp',        absint( $_POST['wordcamp'] ) );
-		update_post_meta( $post_id, '_camppayments_description',     wp_kses( $_POST['description'], wp_kses_allowed_html( 'strip' ) ) );
-		update_post_meta( $post_id, '_camppayments_due_by',          strtotime( sanitize_text_field( $_POST['due_by'] ) ) );    // todo handle better if haven't entered a value
-		update_post_meta( $post_id, '_camppayments_payment_amount',  sanitize_text_field( $_POST['payment_amount'] ) );
-		update_post_meta( $post_id, '_camppayments_currency',        sanitize_text_field( $_POST['currency'] ) );
-		update_post_meta( $post_id, '_camppayments_notes',           wp_kses( $_POST['notes'], wp_kses_allowed_html( 'strip' ) ) );
+				case 'description':
+				case 'notes':
+					$safe_value = wp_kses( $unsafe_value, wp_kses_allowed_html( 'strip' ) );
+					break;
 
-		// Payment Details
-		update_post_meta( $post_id, '_camppayments_payment_method',        ! empty( $_POST['payment_method'] ) ? sanitize_text_field( $_POST['payment_method'] ) : '' );
+				case 'payment_amount':
+				case 'currency':
+				case 'payment_method':
+				case 'vendor_name':
+				case 'vendor_phone_number':
+				case 'vendor_email_address':
+				case 'vendor_street_address':
+				case 'vendor_city':
+				case 'vendor_state':
+				case 'vendor_zip_code':
+				case 'vendor_country':
+					$safe_value = sanitize_text_field( $unsafe_value );
+					break;
 
-		// Vendor Details
-		update_post_meta( $post_id, '_camppayments_vendor_name',           sanitize_text_field( $_POST['vendor_name'] ) );
-		update_post_meta( $post_id, '_camppayments_vendor_phone_number',   sanitize_text_field( $_POST['vendor_phone_number'] ) );
-		update_post_meta( $post_id, '_camppayments_vendor_email_address',  sanitize_text_field( $_POST['vendor_email_address'] ) );
-		update_post_meta( $post_id, '_camppayments_vendor_street_address', sanitize_text_field( $_POST['vendor_street_address'] ) );
-		update_post_meta( $post_id, '_camppayments_vendor_city',           sanitize_text_field( $_POST['vendor_city'] ) );
-		update_post_meta( $post_id, '_camppayments_vendor_state',          sanitize_text_field( $_POST['vendor_state'] ) );
-		update_post_meta( $post_id, '_camppayments_vendor_zip_code',       sanitize_text_field( $_POST['vendor_zip_code'] ) );
-		update_post_meta( $post_id, '_camppayments_vendor_country',        sanitize_text_field( $_POST['vendor_country'] ) );
+				case 'due_by':
+					if ( empty( $_POST[ $key ] ) ) {
+						$safe_value = '';
+					} else {
+						$safe_value = strtotime( sanitize_text_field( $unsafe_value ) );
+					}
+					break;
 
-		// todo add others
+				default:
+					$safe_value = null;
+					break;
+			}
+
+			if ( ! is_null( $safe_value ) ) {
+				update_post_meta( $post_id, '_camppayments_' . $key, $safe_value );
+			}
+		}
 	}
 
 	public function get_columns( $_columns ) {
