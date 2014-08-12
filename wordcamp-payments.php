@@ -21,11 +21,11 @@ class WordCamp_Payments {
 	}
 
 	protected function bootstrap() {
-		require_once( __DIR__ . '/payment.php' );
+		require_once( __DIR__ . '/payment-request.php' );
 		require_once( __DIR__ . '/network-admin-tools.php' );
 
 		if ( is_admin() ) {
-			$GLOBALS['wcp_payment'] = new WCP_Payment();
+			$GLOBALS['wcp_payment'] = new WCP_Payment_Request();
 		}
 
 		if ( is_network_admin() ) {
@@ -49,7 +49,7 @@ class WordCamp_Payments {
 	public function notify_central_of_new_requests( $new_status, $old_status, $post ) {
 		/** @var WP_User $requester */
 
-		if ( WCP_Payment::POST_TYPE != $post->post_type ) {
+		if ( WCP_Payment_Request::POST_TYPE != $post->post_type ) {
 			return;
 		}
 

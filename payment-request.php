@@ -1,7 +1,7 @@
 <?php
 
-class WCP_Payment {
-	const POST_TYPE = 'wcp_payment';
+class WCP_Payment_Request {
+	const POST_TYPE = 'wcp_payment_request';
 
 	public function __construct() {
 		add_action( 'init',           array( $this, 'init_post_type' ));
@@ -25,25 +25,25 @@ class WCP_Payment {
 
 	public function init_post_type() {
 		$labels = array(
-			'name'               => _x( 'Payments', 'post type general name', 'wordcamporg' ),
-			'singular_name'      => _x( 'Payment', 'post type singular name', 'wordcamporg' ),
-			'menu_name'          => _x( 'Payments', 'admin menu', 'wordcamporg' ),
-			'name_admin_bar'     => _x( 'Payment', 'add new on admin bar', 'wordcamporg' ),
+			'name'               => _x( 'Payment Requests', 'post type general name', 'wordcamporg' ),
+			'singular_name'      => _x( 'Payment Request', 'post type singular name', 'wordcamporg' ),
+			'menu_name'          => _x( 'Payment Requests', 'admin menu', 'wordcamporg' ),
+			'name_admin_bar'     => _x( 'Payment Request', 'add new on admin bar', 'wordcamporg' ),
 			'add_new'            => _x( 'Add New', 'payment', 'wordcamporg' ),
-			'add_new_item'       => __( 'Add New Payment', 'wordcamporg' ),
-			'new_item'           => __( 'New Payment', 'wordcamporg' ),
-			'edit_item'          => __( 'Edit Payment', 'wordcamporg' ),
-			'view_item'          => __( 'View Payment', 'wordcamporg' ),
-			'all_items'          => __( 'All Payments', 'wordcamporg' ),
-			'search_items'       => __( 'Search Payments', 'wordcamporg' ),
-			'parent_item_colon'  => __( 'Parent Payments:', 'wordcamporg' ),
-			'not_found'          => __( 'No payments found.', 'wordcamporg' ),
-			'not_found_in_trash' => __( 'No payments found in Trash.', 'wordcamporg' )
+			'add_new_item'       => __( 'Add New Payment Request', 'wordcamporg' ),
+			'new_item'           => __( 'New Payment Request', 'wordcamporg' ),
+			'edit_item'          => __( 'Edit Payment Request', 'wordcamporg' ),
+			'view_item'          => __( 'View Payment Request', 'wordcamporg' ),
+			'all_items'          => __( 'All Payment Requests', 'wordcamporg' ),
+			'search_items'       => __( 'Search Payment Requests', 'wordcamporg' ),
+			'parent_item_colon'  => __( 'Parent Payment Requests:', 'wordcamporg' ),
+			'not_found'          => __( 'No payment requests found.', 'wordcamporg' ),
+			'not_found_in_trash' => __( 'No payment requests found in Trash.', 'wordcamporg' )
 		);
 
 		$args = array(
 			'labels'            => $labels,
-			'description'       => 'WordCamp Payments',
+			'description'       => 'WordCamp Payment Requests',
 			'public'            => false,
 			'show_ui'           => true,
 			'show_in_nav_menus' => true,
@@ -62,8 +62,8 @@ class WCP_Payment {
 			self::POST_TYPE,
 			array(
 				'labels' => array(
-					'name'          => __( 'Payment Categories', 'wordcamporg' ),
-					'singular_name' => __( 'Payment Category', 'wordcamporg' ),
+					'name'          => __( 'Payment Request Categories', 'wordcamporg' ),
+					'singular_name' => __( 'Payment Request Category', 'wordcamporg' ),
 				),
 				'hierarchical' => true,
 			)
