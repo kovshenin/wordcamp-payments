@@ -349,7 +349,7 @@ class WCP_Payment {
 				break;
 
 			case 'due_by':
-				if ( $value = get_post_meta( $post->ID, '_camppayments_due_by', true ) ) {
+				if ( $value = get_post_meta( $post->ID, '_camppayments_due_by', true ) ) {  // todo broken
 					$value = date( 'F jS, Y', $value );
 				}
 				break;
@@ -428,7 +428,7 @@ class WCP_Payment {
 
 		$wordcamps      = array();
 		$wordcamp_posts = get_posts( array(
-			'post_type'   => 'wcpt_post_type_id',
+			'post_type'   => 'wordcamp',
 			'post_status' => array( 'pending', 'publish' ),
 			'numberposts' => -1,
 			'meta_query'  => array(
@@ -438,7 +438,7 @@ class WCP_Payment {
 					'compare' => '>'
 				),
 			),
-		) );    // todo broken during migration, fix
+		) );
 
 		restore_current_blog();
 

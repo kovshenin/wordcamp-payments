@@ -73,7 +73,7 @@ class WordCamp_Payments {
 
 			is_a( $wordcamp, 'WP_Post' ) ? $wordcamp->post_title : '',
 			$post->post_title,
-			$post_meta['_camppayments_due_by'][0],
+			$post_meta['_camppayments_due_by'][0],  // todo pull from $_POST
 			$requester->get( 'display_name' ),
 			admin_url( 'post.php?post='. $post->ID .'&action=edit' )
 		);
