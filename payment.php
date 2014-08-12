@@ -48,7 +48,7 @@ class WCP_Payment {
 			'show_ui'           => true,
 			'show_in_nav_menus' => true,
 			'menu_position'     => 25,
-			'supports'          => array( 'title' ), // todo add space after title b/c editor isn't there to do it
+			'supports'          => array( 'title' ),
 			'taxonomies'        => array( 'payment-category' ),
 			'has_archive'       => true,
 		);
@@ -589,17 +589,18 @@ class WCP_Payment {
 			}
 		}
 
+		// todo refactor to sanitize automatically based on field type
+
 		// General Information
 		update_post_meta( $post_id, '_camppayments_wordcamp',        absint( $_POST['wordcamp'] ) );
 		update_post_meta( $post_id, '_camppayments_description',     wp_kses( $_POST['description'], wp_kses_allowed_html( 'strip' ) ) );
 		update_post_meta( $post_id, '_camppayments_due_by',          strtotime( sanitize_text_field( $_POST['due_by'] ) ) );    // todo handle better if haven't entered a value
-		update_post_meta( $post_id, '_camppayments_payment_details', wp_kses( $_POST['payment_details'], wp_kses_allowed_html( 'strip' ) ) );
 		update_post_meta( $post_id, '_camppayments_payment_amount',  sanitize_text_field( $_POST['payment_amount'] ) );
 		update_post_meta( $post_id, '_camppayments_currency',        sanitize_text_field( $_POST['currency'] ) );
 		update_post_meta( $post_id, '_camppayments_notes',           wp_kses( $_POST['notes'], wp_kses_allowed_html( 'strip' ) ) );
 
 		// Payment Details
-		update_post_meta( $post_id, '_camppayments_payment_method',        sanitize_text_field( $_POST['payment_method'] ) );
+		update_post_meta( $post_id, '_camppayments_payment_method',        ! empty( $_POST['payment_method'] ) ? sanitize_text_field( $_POST['payment_method'] ) : '' );
 
 		// Vendor Details
 		update_post_meta( $post_id, '_camppayments_vendor_name',           sanitize_text_field( $_POST['vendor_name'] ) );
