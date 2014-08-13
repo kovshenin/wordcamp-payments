@@ -174,13 +174,13 @@ class WCP_Payment_Request {
 
 		?>
 
-		<p id="payment_method_visa_fields" class="description payment_method_fields <?php echo 'payment_method_visa' == $selected_payment_method ? 'active' : 'inactive'; ?>">
+		<p id="payment_method_visa_fields" class="description payment_method_fields <?php echo 'Visa' == $selected_payment_method ? 'active' : 'inactive'; ?>">
 			<?php _e( 'Please make sure that you upload an authorization form above, if one is required by the vendor.', 'wordcamporg' ); ?>
 		</p>
 
 		<?php
 
-		echo '<table id="payment_method_wire_fields" class="form-table payment_method_fields '. ( 'payment_method_visa' == $selected_payment_method ? 'active' : 'inactive' ) .'">';
+		echo '<table id="payment_method_wire_fields" class="form-table payment_method_fields '. ( 'Wire' == $selected_payment_method ? 'active' : 'inactive' ) .'">';
 		$this->render_text_input( $post, 'Beneficiary’s Bank', 'bank_name' );
 		$this->render_text_input( $post, 'Beneficiary’s Bank Address', 'bank_address' );   // todo multiple fields
 		$this->render_text_input( $post, 'Beneficiary’s Bank SWIFT BIC', 'bank_bic' );
@@ -310,7 +310,6 @@ class WCP_Payment_Request {
 	 */
 	protected function render_checkbox_input( $post, $label, $name, $description = '' ) {
 		$value = $this->get_field_value( $name, $post );
-
 		?>
 
 		<tr>
@@ -325,11 +324,14 @@ class WCP_Payment_Request {
 					type="checkbox"
 					id="<?php echo esc_attr( $name ); ?>"
 					name="<?php echo esc_attr( $name ); ?>"
-					value="<?php echo esc_attr( $value ); ?>"
+					value="<?php echo esc_attr( $name ); ?>"
+				    <?php checked( $value, $name ); ?>
 					/>
 
 				<?php if ( ! empty( $description ) ) : ?>
-					<span class="description"><?php echo esc_html( $description ); ?></span>
+					<label for="<?php echo esc_attr( $name ); ?>">
+						<span class="description"><?php echo esc_html( $description ); ?></span>
+					</label>
 				<?php endif; ?>
 			</td>
 		</tr>
@@ -630,6 +632,11 @@ class WCP_Payment_Request {
 		return $currencies;
 	}
 
+	/**
+	 * Save the post's data
+	 *
+	 * @param int $post_id
+	 */
 	public function save_payment( $post_id ) {
 		// Verify nonces
 		$nonces = array( 'general_info_nonce', 'payment_details_nonce', 'vendor_details_nonce' );
@@ -640,7 +647,17 @@ class WCP_Payment_Request {
 			}
 		}
 
-		// Sanitize and save field values
+		// Sanitize and save the field values
+		$this->sanitize_save_normal_fields( $post_id );
+		$this->sanitize_save_checkbox_fields( $post_id );
+	}
+
+	/**
+	 * Sanitize and save values for all normal fields
+	 *
+	 * @param int $post_id
+	 */
+	protected function sanitize_save_normal_fields( $post_id ) {
 		foreach ( $_POST as $key => $unsafe_value ) {
 			switch ( $key ) {
 				case 'wordcamp':
@@ -654,7 +671,6 @@ class WCP_Payment_Request {
 
 				case 'payment_amount':
 				case 'currency':
-				case 'payment_method':
 				case 'vendor_name':
 				case 'vendor_phone_number':
 				case 'vendor_email_address':
@@ -663,7 +679,19 @@ class WCP_Payment_Request {
 				case 'vendor_state':
 				case 'vendor_zip_code':
 				case 'vendor_country':
+				case 'bank_name':
+				case 'bank_bic':
+				case 'beneficiary_account_number':
+				case 'beneficiary_name':
 					$safe_value = sanitize_text_field( $unsafe_value );
+					break;
+
+				case 'payment_method':
+					if ( in_array( $unsafe_value, $this->get_field_value( 'payment_method', null ) ) ) {
+						$safe_value = $unsafe_value;
+					} else {
+						$safe_value = false;
+					}
 					break;
 
 				case 'due_by':
@@ -681,6 +709,22 @@ class WCP_Payment_Request {
 
 			if ( ! is_null( $safe_value ) ) {
 				update_post_meta( $post_id, '_camppayments_' . $key, $safe_value );
+			}
+		}
+	}
+
+	/**
+	 * Sanitize and save values for all checkbox fields
+	 *
+	 * @param int $post_id
+	 */
+	protected function sanitize_save_checkbox_fields( $post_id ) {
+		$checkbox_fields = array( 'requesting_reimbursement' );
+		foreach( $checkbox_fields as $field ) {
+			if ( isset( $_POST[ $field ] ) ) {
+				update_post_meta( $post_id, '_camppayments_' . $field, $_POST[ $field ] );
+			} else {
+				delete_post_meta( $post_id, '_camppayments_' . $field );
 			}
 		}
 	}
