@@ -9,8 +9,10 @@ class WCP_Payment_Request {
 		add_action( 'add_meta_boxes', array( $this, 'init_meta_box' ) );
 		add_action( 'save_post',      array( $this, 'save_payment' ) );
 
-		add_filter( 'manage_'. self::POST_TYPE .'_posts_columns',        array( $this, 'get_columns' ) );
-		add_action( 'manage_'. self::POST_TYPE .'_posts_custom_column' , array( $this, 'render_column' ), 10, 2 );
+		add_filter( 'manage_'.      self::POST_TYPE .'_posts_columns',       array( $this, 'get_columns' ) );
+		add_filter( 'manage_edit-'. self::POST_TYPE .'_sortable_columns',    array( $this, 'get_sortable_columns' ) );
+		add_action( 'manage_'.      self::POST_TYPE .'_posts_custom_column', array( $this, 'render_columns' ), 10, 2 );
+		add_action( 'pre_get_posts',                                         array( $this, 'sort_columns' ) );
 	}
 
 	/**
@@ -744,6 +746,12 @@ class WCP_Payment_Request {
 		}
 	}
 
+	/**
+	 * Define columns for the Payment Requests screen.
+	 *
+	 * @param array $_columns
+	 * @return array
+	 */
 	public function get_columns( $_columns ) {
 		$columns = array(
 			'cb'             => $_columns['cb'],
@@ -756,10 +764,30 @@ class WCP_Payment_Request {
 			'payment_amount' => __( 'Amount', 'wordcamporg' ),
 			'status'         => __( 'Status', 'wordcamporg' ),
 		);
+
 		return $columns;
 	}
 
-	public function render_column( $column, $post_id ) {
+	/**
+	 * Register our sortable columns.
+	 *
+	 * @param array $columns
+	 * @return array
+	 */
+	public function get_sortable_columns( $columns ) {
+		$columns['wordcamp'] = '_camppayments_wordcamp';
+		$columns['due_by']   = '_camppayments_due_by';
+
+		return $columns;
+	}
+
+	/**
+	 * Render custom columns on the Payment Requests screen.
+	 *
+	 * @param string $column
+	 * @param int $post_id
+	 */
+	public function render_columns( $column, $post_id ) {
 		switch ( $column ) {
 			case 'wordcamp':
 				if ( $wordcamp_id = get_post_meta( $post_id, '_camppayments_wordcamp', true ) ) {
@@ -795,6 +823,33 @@ class WCP_Payment_Request {
 				echo esc_html( get_post_meta( $post_id, '_camppayments_' . $column, true ) );
 				break;
 		}
+	}
 
+	/**
+	 * Sort our custom columns.
+	 *
+	 * @param WP_Query $query
+	 */
+	public function sort_columns( $query ) {
+		if ( self::POST_TYPE != $query->get( 'post_type' ) ) {
+			return;
+		}
+
+		$orderby = $query->get( 'orderby' );
+
+		switch( $orderby ) {
+			case '_camppayments_wordcamp':
+				$query->set( 'meta_key', '_camppayments_wordcamp' );    // todo this is sorting on the wordcamp id, not the title. need to use something more robust like `posts_orderby`? maybe just use search for this field instead of sort?
+				$query->set( 'orderby', 'meta_value' );
+				break;
+
+			case '_camppayments_due_by':
+				$query->set( 'meta_key', '_camppayments_due_by' );
+				$query->set( 'orderby', 'meta_value_num' );
+				break;
+
+			default:
+				break;
+		}
 	}
 }
