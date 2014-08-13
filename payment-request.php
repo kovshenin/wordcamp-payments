@@ -168,6 +168,7 @@ class WCP_Payment_Request {
 
 		echo '<table class="form-table">';
 		$this->render_radio_input( $post, 'Payment Method', 'payment_method' );
+		$this->render_checkbox_input( $post, 'Reimbursing Personal Expense', 'requesting_reimbursement', 'Check this box if you paid for this expense out of pocket. Please attach the original payment support with the vendor attached (if any), and proof of disbursed funds.' );
 		echo '</table>';
 
 		?>
@@ -182,9 +183,9 @@ class WCP_Payment_Request {
 		$this->render_text_input( $post, 'Beneficiary’s Bank', 'bank_name' );
 		$this->render_text_input( $post, 'Beneficiary’s Bank Address', 'bank_address' );   // todo multiple fields
 		$this->render_text_input( $post, 'Beneficiary’s Bank SWIFT BIC', 'bank_bic' );
+		$this->render_text_input( $post, 'Beneficiary’s Account Number or IBAN', 'beneficiary_account_number' );
 		$this->render_text_input( $post, 'Beneficiary’s Name', 'beneficiary_name' );
 		$this->render_text_input( $post, 'Beneficiary’s Address', 'beneficiary_address' );        // todo multiple
-		// todo add account number
 		echo '</table>';
 	}
 
@@ -300,7 +301,43 @@ class WCP_Payment_Request {
 	}
 
 	/**
-	 * Render a <input type="date"> field with the given attributes.
+	 * Render a <input type="checkbox"> field with the given attributes.
+	 *
+	 * @param WP_Post $post
+	 * @param string $label
+	 * @param string $name
+	 */
+	protected function render_checkbox_input( $post, $label, $name, $description = '' ) {
+		$value = $this->get_field_value( $name, $post );
+
+		?>
+
+		<tr>
+			<th>
+				<label for="<?php echo esc_attr( $name ); ?>">
+					<?php echo esc_html( $label ); ?>:
+				</label>
+			</th>
+
+			<td>
+				<input
+					type="checkbox"
+					id="<?php echo esc_attr( $name ); ?>"
+					name="<?php echo esc_attr( $name ); ?>"
+					value="<?php echo esc_attr( $value ); ?>"
+					/>
+
+				<?php if ( ! empty( $description ) ) : ?>
+					<span class="description"><?php echo esc_html( $description ); ?></span>
+				<?php endif; ?>
+			</td>
+		</tr>
+
+		<?php
+	}
+
+	/**
+	 * Render a <input type="text"> field with the given attributes.
 	 *
 	 * @param WP_Post $post
 	 * @param string $label
