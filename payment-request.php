@@ -69,7 +69,19 @@ class WCP_Payment_Request {
 			)
 		);
 
-		// todo will have to hardcode these, or manage them from central/network admin
+		/*
+		    todo insert whitelist of terms, and prevent adding new ones
+
+		    venue
+		    food & beverage
+		    signage & badges
+		    office supplies
+		    after party
+		    speaker event
+		    audio visual
+		    swag (t-shirts, stickers, etc)
+		    other – If they select other they need to include a note, can we add a required text box if that is the selection?
+		 */
 	}
 
 	public function init_meta_box() {
@@ -443,7 +455,7 @@ class WCP_Payment_Request {
 		restore_current_blog();
 
 		foreach ( $wordcamp_posts as $post ) {
-			$wordcamps[ $post->ID ] = $post->post_title;
+			$wordcamps[ $post->ID ] = $post->post_title;    // todo include year in title
 		}
 
 		return $wordcamps;
@@ -654,8 +666,11 @@ class WCP_Payment_Request {
 		switch ( $column ) {
 			case 'wordcamp':
 				if ( $wordcamp_id = get_post_meta( $post_id, '_camppayments_wordcamp', true ) ) {
-					$wordcamp = get_post( $wordcamp_id );
-					echo esc_html( $wordcamp->post_title );
+					switch_to_blog( BLOG_ID_CURRENT_SITE ); // central.wordcamp.org
+					if ( $wordcamp = get_post( $wordcamp_id ) ) {
+						echo esc_html( $wordcamp->post_title );
+					}
+					restore_current_blog();
 				}
 				break;
 
