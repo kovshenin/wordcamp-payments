@@ -12,14 +12,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class WordCamp_Payments {
+	const VERSION = '0.1.0';
 
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 		$this->bootstrap();
 
-		add_action( 'wp_enqueue_scripts',     array( $this, 'enqueue_assets' ) );
+		add_action( 'admin_enqueue_scripts',  array( $this, 'enqueue_assets' ) );
 		add_action( 'transition_post_status', array( $this, 'notify_central_of_new_requests' ), 10, 3 );
 	}
 
+	/**
+	 * Basic initialization
+	 */
 	protected function bootstrap() {
 		require_once( __DIR__ . '/payment-request.php' );
 		require_once( __DIR__ . '/network-admin-tools.php' );
@@ -35,8 +42,28 @@ class WordCamp_Payments {
 		register_activation_hook( __FILE__, array( $GLOBALS['wcp_payment'], 'activate' ) );
 	}
 
+	/**
+	 * Enqueue scripts and stylesheets
+	 */
 	public function enqueue_assets() {
-		// todo enqueue js
+		wp_register_script(
+			'wordcamp-payments',
+			plugins_url( 'wordcamp-payments.js', __FILE__ ),
+			array( 'jquery' ),
+			self::VERSION,
+			true
+		);
+
+		wp_register_style(
+			'wordcamp-payments',
+			plugins_url( 'wordcamp-payments.css', __FILE__ ),
+			array(),
+			self::VERSION
+		);
+
+		// todo if on one of our screens
+		wp_enqueue_script( 'wordcamp-payments' );
+		wp_enqueue_style( 'wordcamp-payments' );
 	}
 
 	/**

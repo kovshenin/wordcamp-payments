@@ -1,0 +1,7 @@
+.payment_method_fields.active {
+	display: block;
+}
+
+.payment_method_fields.inactive {
+	display: none;
+}

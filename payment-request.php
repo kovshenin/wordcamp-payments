@@ -165,6 +165,7 @@ class WCP_Payment_Request {
 	 */
 	public function render_payment_metabox( $post ) {
 		wp_nonce_field( 'payment_details', 'payment_details_nonce' );
+		$selected_payment_method = get_post_meta( $post->ID, '_camppayments_payment_method', true );
 
 		echo '<table class="form-table">';
 		$this->render_radio_input( $post, 'Payment Method', 'payment_method' );
@@ -173,13 +174,13 @@ class WCP_Payment_Request {
 
 		?>
 
-		<p id="payment_method_credit_card" class="description">
+		<p id="payment_method_visa_fields" class="description payment_method_fields <?php echo 'payment_method_visa' == $selected_payment_method ? 'active' : 'inactive'; ?>">
 			<?php _e( 'Please make sure that you upload an authorization form above, if one is required by the vendor.', 'wordcamporg' ); ?>
 		</p>
 
 		<?php
 
-		echo '<table id="payment_method_wire" class="form-table">';
+		echo '<table id="payment_method_wire_fields" class="form-table payment_method_fields '. ( 'payment_method_visa' == $selected_payment_method ? 'active' : 'inactive' ) .'">';
 		$this->render_text_input( $post, 'Beneficiary’s Bank', 'bank_name' );
 		$this->render_text_input( $post, 'Beneficiary’s Bank Address', 'bank_address' );   // todo multiple fields
 		$this->render_text_input( $post, 'Beneficiary’s Bank SWIFT BIC', 'bank_bic' );
