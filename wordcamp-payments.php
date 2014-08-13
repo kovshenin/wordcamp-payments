@@ -62,8 +62,8 @@ class WordCamp_Payments {
 		);
 
 		// todo if on one of our screens
-		wp_enqueue_script( 'wordcamp-payments' );
-		wp_enqueue_style( 'wordcamp-payments' );
+			wp_enqueue_script( 'wordcamp-payments' );
+			wp_enqueue_style( 'wordcamp-payments' );
 	}
 
 	/**

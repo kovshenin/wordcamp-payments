@@ -27,7 +27,7 @@ jQuery( document ).ready( function( $ ) {
 			$( '.payment_method_fields' ).removeClass( 'active' );
 			$( '.payment_method_fields' ).addClass( 'inactive' );
 			$( active_fields_container ).removeClass( 'inactive' );
-			$( active_fields_container ).removeClass( 'active' );
+			$( active_fields_container ).addClass( 'active' );
 
 			// todo make the transition smoother
 		}

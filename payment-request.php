@@ -188,7 +188,7 @@ class WCP_Payment_Request {
 			<?php $this->render_text_input( $post, 'Payable To', 'payable_to' ); ?>
 		</table>
 
-		<p id="payment_method_visa_fields" class="description payment_method_fields <?php echo 'Visa' == $selected_payment_method ? 'active' : 'inactive'; ?>">
+		<p id="payment_method_credit_card_fields" class="description payment_method_fields <?php echo 'Credit Card' == $selected_payment_method ? 'active' : 'inactive'; ?>">
 			<?php _e( 'Please make sure that you upload an authorization form above, if one is required by the vendor.', 'wordcamporg' ); ?>
 		</p>
 
@@ -295,7 +295,7 @@ class WCP_Payment_Request {
 
 			<td>
 				<?php foreach ( $options as $option ) : ?>
-					<?php $option_name = $name . '_' . sanitize_title_with_dashes( $option ); ?>
+					<?php $option_name = $name . '_' . sanitize_title_with_dashes( str_replace( ' ', '_', $option ) ); ?>
 
 					<input
 						type="radio"
@@ -429,7 +429,7 @@ class WCP_Payment_Request {
 				break;
 
 			case 'payment_method':
-				$value = array( 'Check', 'Visa', 'Wire' );
+				$value = array( 'Check', 'Credit Card', 'Wire' );
 				break;
 
 			default:
