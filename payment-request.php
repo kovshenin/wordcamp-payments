@@ -726,6 +726,12 @@ class WCP_Payment_Request {
 				echo esc_html( get_post_meta( $post_id, '_camppayments_payment_amount', true ) );
 				break;
 
+			case 'due_by':
+				if ( $date = get_post_meta( $post_id, '_camppayments_due_by', true ) ) {
+					echo date( 'F jS, Y', $date );
+				}
+				break;
+
 			default:
 				echo esc_html( get_post_meta( $post_id, '_camppayments_' . $column, true ) );
 				break;
