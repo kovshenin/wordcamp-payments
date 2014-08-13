@@ -468,7 +468,7 @@ class WCP_Payment_Request {
 				<?php endif; ?>
 
 				<div class="wp-media-buttons">
-					<a href="" class="button insert-media add_media">Add files</a>
+					<a href="javascript:;" class="button insert-media add_media">Add files</a>
 				</div>
 
 				<div style="margin-top: 15px; margin-bottom: 0;">
