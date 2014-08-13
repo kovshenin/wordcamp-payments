@@ -177,27 +177,31 @@ class WCP_Payment_Request {
 		wp_nonce_field( 'payment_details', 'payment_details_nonce' );
 		$selected_payment_method = get_post_meta( $post->ID, '_camppayments_payment_method', true );
 
-		echo '<table class="form-table">';
-		$this->render_radio_input( $post, 'Payment Method', 'payment_method' );
-		$this->render_checkbox_input( $post, 'Reimbursing Personal Expense', 'requesting_reimbursement', 'Check this box if you paid for this expense out of pocket. Please attach the original payment support with the vendor attached (if any), and proof of disbursed funds.' );
-		echo '</table>';
-
 		?>
+
+		<table class="form-table">
+			<?php $this->render_radio_input( $post, 'Payment Method', 'payment_method' ); ?>
+			<?php $this->render_checkbox_input( $post, 'Reimbursing Personal Expense', 'requesting_reimbursement', 'Check this box if you paid for this expense out of pocket. Please attach the original payment support with the vendor attached (if any), and proof of disbursed funds.' ); ?>
+		</table>
+
+		<table id="payment_method_check_fields" class="form-table payment_method_fields <?php echo 'Check' == $selected_payment_method ? 'active' : 'inactive'; ?>">
+			<?php $this->render_text_input( $post, 'Payable To', 'payable_to' ); ?>
+		</table>
 
 		<p id="payment_method_visa_fields" class="description payment_method_fields <?php echo 'Visa' == $selected_payment_method ? 'active' : 'inactive'; ?>">
 			<?php _e( 'Please make sure that you upload an authorization form above, if one is required by the vendor.', 'wordcamporg' ); ?>
 		</p>
 
-		<?php
+		<table id="payment_method_wire_fields" class="form-table payment_method_fields <?php echo 'Wire' == $selected_payment_method ? 'active' : 'inactive'; ?>">
+			<?php $this->render_text_input( $post, 'Beneficiary’s Bank', 'bank_name' ); ?>
+			<?php $this->render_text_input( $post, 'Beneficiary’s Bank Address', 'bank_address' );   // todo multiple fields ?>
+			<?php $this->render_text_input( $post, 'Beneficiary’s Bank SWIFT BIC', 'bank_bic' ); ?>
+			<?php $this->render_text_input( $post, 'Beneficiary’s Account Number or IBAN', 'beneficiary_account_number' ); ?>
+			<?php $this->render_text_input( $post, 'Beneficiary’s Name', 'beneficiary_name' ); ?>
+			<?php $this->render_text_input( $post, 'Beneficiary’s Address', 'beneficiary_address' );        // todo multiple ?>
+		</table>
 
-		echo '<table id="payment_method_wire_fields" class="form-table payment_method_fields '. ( 'Wire' == $selected_payment_method ? 'active' : 'inactive' ) .'">';
-		$this->render_text_input( $post, 'Beneficiary’s Bank', 'bank_name' );
-		$this->render_text_input( $post, 'Beneficiary’s Bank Address', 'bank_address' );   // todo multiple fields
-		$this->render_text_input( $post, 'Beneficiary’s Bank SWIFT BIC', 'bank_bic' );
-		$this->render_text_input( $post, 'Beneficiary’s Account Number or IBAN', 'beneficiary_account_number' );
-		$this->render_text_input( $post, 'Beneficiary’s Name', 'beneficiary_name' );
-		$this->render_text_input( $post, 'Beneficiary’s Address', 'beneficiary_address' );        // todo multiple
-		echo '</table>';
+		<?php
 	}
 
 	/**
@@ -693,6 +697,7 @@ class WCP_Payment_Request {
 				case 'bank_bic':
 				case 'beneficiary_account_number':
 				case 'beneficiary_name':
+				case 'payable_to':
 					$safe_value = sanitize_text_field( $unsafe_value );
 					break;
 
