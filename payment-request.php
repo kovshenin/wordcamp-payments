@@ -21,6 +21,7 @@ class WCP_Payment_Request {
 	public function activate( $network_wide ) {
 		$this->init_post_type();
 		$this->create_post_taxonomies();
+		$this->insert_default_terms();
 	}
 
 	public function init_post_type() {
@@ -64,24 +65,35 @@ class WCP_Payment_Request {
 				'labels' => array(
 					'name'          => __( 'Payment Request Categories', 'wordcamporg' ),
 					'singular_name' => __( 'Payment Request Category', 'wordcamporg' ),
+					'all_items'     => __( 'All Categories', 'wordcamporg' ),
 				),
 				'hierarchical' => true,
+				'capabilities' => array(
+					'manage_terms' => 'do_not_allow',
+					'edit_terms'   => 'do_not_allow',
+					'delete_terms' => 'do_not_allow',
+				)
 			)
 		);
 
-		/*
-		    todo insert whitelist of terms, and prevent adding new ones
+		$this->insert_default_terms();
+	}
 
-		    venue
-		    food & beverage
-		    signage & badges
-		    office supplies
-		    after party
-		    speaker event
-		    audio visual
-		    swag (t-shirts, stickers, etc)
-		    other – If they select other they need to include a note, can we add a required text box if that is the selection?
-		 */
+	/**
+	 * Insert the default category terms.
+	 */
+	protected function insert_default_terms() {
+		// todo  If they select other they need to include a note, can we add a required text box if that is the selection?
+
+		wp_insert_term( 'Venue', 'payment-category' );
+		wp_insert_term( 'Food & Beverage', 'payment-category' );
+		wp_insert_term( 'Signage & Badges', 'payment-category' );
+		wp_insert_term( 'Office Supplies', 'payment-category' );
+		wp_insert_term( 'After Party', 'payment-category' );
+		wp_insert_term( 'Speaker Event', 'payment-category' );
+		wp_insert_term( 'Audio Visual', 'payment-category' );
+		wp_insert_term( 'Swag (t-shirts, stickers, etc)', 'payment-category' );
+		wp_insert_term( 'Other', 'payment-category' );
 	}
 
 	public function init_meta_box() {
