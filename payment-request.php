@@ -85,14 +85,14 @@ class WCP_Payment_Request {
 	protected function insert_default_terms() {
 		// todo  If they select other they need to include a note, can we add a required text box if that is the selection?
 
-		wp_insert_term( 'Venue', 'payment-category' );
-		wp_insert_term( 'Food & Beverage', 'payment-category' );
-		wp_insert_term( 'Signage & Badges', 'payment-category' );
-		wp_insert_term( 'Office Supplies', 'payment-category' );
 		wp_insert_term( 'After Party', 'payment-category' );
-		wp_insert_term( 'Speaker Event', 'payment-category' );
 		wp_insert_term( 'Audio Visual', 'payment-category' );
+		wp_insert_term( 'Food & Beverage', 'payment-category' );
+		wp_insert_term( 'Office Supplies', 'payment-category' );
+		wp_insert_term( 'Signage & Badges', 'payment-category' );
+		wp_insert_term( 'Speaker Event', 'payment-category' );
 		wp_insert_term( 'Swag (t-shirts, stickers, etc)', 'payment-category' );
+		wp_insert_term( 'Venue', 'payment-category' );
 		wp_insert_term( 'Other', 'payment-category' );
 	}
 
