@@ -75,8 +75,6 @@ class WCP_Payment_Request {
 				)
 			)
 		);
-
-		$this->insert_default_terms();
 	}
 
 	/**
