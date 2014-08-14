@@ -69,6 +69,7 @@ class WCP_Payment_Request {
 					'singular_name' => __( 'Payment Request Category', 'wordcamporg' ),
 					'all_items'     => __( 'All Categories', 'wordcamporg' ),
 				),
+				'show_ui'      => false,
 				'hierarchical' => true,
 				'capabilities' => array(
 					'manage_terms' => 'do_not_allow',
@@ -133,19 +134,48 @@ class WCP_Payment_Request {
 	public function render_general_metabox( $post ) {
 		wp_nonce_field( 'general_info', 'general_info_nonce' );
 
-		echo '<table class="form-table">';
+		$assigned_category = wp_get_object_terms( $post->ID, 'payment-category' );
+		if ( empty( $assigned_category ) || is_wp_error( $assigned_category ) ) {
+			$assigned_category = 'null';
+		} else {
+			$assigned_category = $assigned_category[0]->term_id;
+		}
 
-		$this->render_text_input( $post, 'Request ID', 'request_id', '', '', true );
-		$this->render_text_input( $post, 'Requester', 'requester', '', '', true );
-		$this->render_select_input( $post, 'WordCamp', 'wordcamp' );
-		$this->render_textarea_input( $post, 'Description', 'description' );
-		$this->render_text_input( $post, 'Requested date for payment/due by', 'due_by', 'Format: ' . date( 'F jS, Y' ), 'date' );
-		$this->render_files_input( $post, 'Files', 'files', __( 'Attach supporting documentation including Invoices, Contracts, or other vendor correspondence. If no supporting documentation is available, indicate reason in the notes below.', 'wordcamporg' ) );
-		$this->render_text_input( $post, 'Amount', 'payment_amount' );
-		$this->render_select_input( $post, 'Currency', 'currency' );
-		$this->render_textarea_input( $post, 'Notes', 'notes', 'Any other details you want to share.' );
+		?>
 
-		echo '</table>';
+		<table class="form-table">
+			<?php
+				$this->render_text_input( $post, 'Request ID', 'request_id', '', '', true );
+				$this->render_text_input( $post, 'Requester', 'requester', '', '', true );
+				$this->render_select_input( $post, 'WordCamp', 'wordcamp' );
+				$this->render_textarea_input( $post, 'Description', 'description' );
+				$this->render_text_input( $post, 'Requested date for payment/due by', 'due_by', 'Format: ' . date( 'F jS, Y' ), 'date' );
+				$this->render_files_input( $post, 'Files', 'files', __( 'Attach supporting documentation including Invoices, Contracts, or other vendor correspondence. If no supporting documentation is available, indicate reason in the notes below.', 'wordcamporg' ) );
+				$this->render_text_input( $post, 'Amount', 'payment_amount' );
+				$this->render_select_input( $post, 'Currency', 'currency' );
+				$this->render_textarea_input( $post, 'Notes', 'notes', 'Any other details you want to share.' );
+			?>
+
+			<tr>
+				<th>Category</th>
+				<td>
+					<?php
+						wp_dropdown_categories( array(
+							'show_option_none' => '-- Select a Category --',
+							'option_none_value' => 'null',
+
+							'orderby'    => 'title',
+							'hide_empty' => false,
+							'selected'   => $assigned_category,
+							'name'       => 'payment_category',
+							'taxonomy'   => 'payment-category',
+						) );
+					?>
+				</td>
+			</tr>
+		</table>
+
+		<?php
 	}
 
 	/**
@@ -665,7 +695,7 @@ class WCP_Payment_Request {
 
 		// Sanitize and save the field values
 		$this->sanitize_save_normal_fields( $post_id );
-		$this->sanitize_save_checkbox_fields( $post_id );
+		$this->sanitize_save_misc_fields( $post_id );
 	}
 
 	/**
@@ -735,7 +765,8 @@ class WCP_Payment_Request {
 	 *
 	 * @param int $post_id
 	 */
-	protected function sanitize_save_checkbox_fields( $post_id ) {
+	protected function sanitize_save_misc_fields( $post_id ) {
+		// Checkboxes
 		$checkbox_fields = array( 'requesting_reimbursement' );
 		foreach( $checkbox_fields as $field ) {
 			if ( isset( $_POST[ $field ] ) ) {
@@ -743,6 +774,11 @@ class WCP_Payment_Request {
 			} else {
 				delete_post_meta( $post_id, '_camppayments_' . $field );
 			}
+		}
+
+		// Taxonomies
+		if ( ! empty( $_POST['payment_category'] ) ) {
+			wp_set_object_terms( $post_id, absint( $_POST['payment_category'] ), 'payment-category' );
 		}
 	}
 
