@@ -84,8 +84,6 @@ class WCP_Payment_Request {
 	 * Insert the default category terms.
 	 */
 	protected function insert_default_terms() {
-		// todo  If they select other they need to include a note, can we add a required text box if that is the selection?
-
 		wp_insert_term( 'After Party', 'payment-category' );
 		wp_insert_term( 'Audio Visual', 'payment-category' );
 		wp_insert_term( 'Food & Beverage', 'payment-category' );
@@ -176,6 +174,8 @@ class WCP_Payment_Request {
 		</table>
 
 		<?php
+
+		// todo If they select other they need to include a note, can we add a required text box if that is the selection?
 	}
 
 	/**
@@ -188,14 +188,15 @@ class WCP_Payment_Request {
 
 		echo '<table class="form-table">';
 
-		$this->render_text_input( $post, 'Vendor name', 'vendor_name' );
-		$this->render_text_input( $post, 'Vendor Phone Number', 'vendor_phone_number', '', 'tel' );
-		$this->render_text_input( $post, 'Vendor Email Address', 'vendor_email_address', '', 'email' );
-		$this->render_text_input( $post, 'Vendor Street Address', 'vendor_street_address' );
-		$this->render_text_input( $post, 'Vendor City', 'vendor_city' );
-		$this->render_text_input( $post, 'Vendor State / Province', 'vendor_state' );
-		$this->render_text_input( $post, 'Vendor ZIP / Postal Code', 'vendor_zip_code' );
-		$this->render_text_input( $post, 'Vendor Country', 'vendor_country' );
+		$this->render_text_input( $post, 'Vendor Name', 'vendor_name' );
+		$this->render_text_input( $post, 'Contact Person', 'vendor_contact_person' );
+		$this->render_text_input( $post, 'Phone Number', 'vendor_phone_number', '', 'tel' );
+		$this->render_text_input( $post, 'Email Address', 'vendor_email_address', '', 'email' );
+		$this->render_text_input( $post, 'Street Address', 'vendor_street_address' );
+		$this->render_text_input( $post, 'City', 'vendor_city' );
+		$this->render_text_input( $post, 'State / Province', 'vendor_state' );
+		$this->render_text_input( $post, 'ZIP / Postal Code', 'vendor_zip_code' );
+		$this->render_text_input( $post, 'Country', 'vendor_country' );
 
 		echo '</table>';
 	}
@@ -730,6 +731,7 @@ class WCP_Payment_Request {
 				case 'beneficiary_account_number':
 				case 'beneficiary_name':
 				case 'payable_to':
+				case 'vendor_contact_person':
 					$safe_value = sanitize_text_field( $unsafe_value );
 					break;
 
