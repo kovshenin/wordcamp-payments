@@ -834,7 +834,10 @@ class WCP_Payment_Request {
 						echo esc_html( $wordcamp->post_title );
 					}
 					restore_current_blog();
+				} else {
+					echo 'None selected';
 				}
+
 				break;
 
 			case 'status':
