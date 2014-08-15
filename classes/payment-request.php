@@ -6,7 +6,7 @@ class WCP_Payment_Request {
 	public function __construct() {
 		add_action( 'init',           array( $this, 'init_post_type' ));
 		add_action( 'init',           array( $this, 'create_post_taxonomies' ) );
-		add_action( 'add_meta_boxes', array( $this, 'init_meta_box' ) );
+		add_action( 'add_meta_boxes', array( $this, 'init_meta_boxes' ) );
 		add_action( 'save_post',      array( $this, 'save_payment' ) );
 
 		add_filter( 'manage_'.      self::POST_TYPE .'_posts_columns',       array( $this, 'get_columns' ) );
@@ -95,9 +95,9 @@ class WCP_Payment_Request {
 		wp_insert_term( 'Other', 'payment-category' );
 	}
 
-	public function init_meta_box() {
+	public function init_meta_boxes() {
 		add_meta_box(
-			'camp_general_info',
+			'wcp_general_info',
 			__( 'General Information', 'wordcamporg' ),
 			array( $this, 'render_general_metabox' ),
 			self::POST_TYPE,
@@ -106,7 +106,7 @@ class WCP_Payment_Request {
 		);
 
 		add_meta_box(
-			'camp_payment_details',
+			'wcp_payment_details',
 			__( 'Payment Details', 'wordcamporg' ),
 			array( $this, 'render_payment_metabox' ),
 			self::POST_TYPE,
@@ -115,9 +115,18 @@ class WCP_Payment_Request {
 		);
 
 		add_meta_box(
-			'camp_vendor_details',
+			'wcp_vendor_details',
 			__( 'Vendor Details', 'wordcamporg' ),
 			array( $this, 'render_vendor_metabox' ),
+			self::POST_TYPE,
+			'normal',
+			'high'
+		);
+
+		add_meta_box(
+			'wcp_files',
+			__( 'Attach Files', 'wordcamporg' ),
+			array( $this, 'render_files_metabox' ),
 			self::POST_TYPE,
 			'normal',
 			'high'
@@ -148,10 +157,9 @@ class WCP_Payment_Request {
 				$this->render_select_input( $post, 'WordCamp', 'wordcamp' );
 				$this->render_textarea_input( $post, 'Description', 'description' );
 				$this->render_text_input( $post, 'Requested date for payment/due by', 'due_by', '', 'date' );
-				$this->render_files_input( $post, 'Files', 'files', __( 'Attach supporting documentation including Invoices, Contracts, or other vendor correspondence. If no supporting documentation is available, indicate reason in the notes below.', 'wordcamporg' ) );
 				$this->render_text_input( $post, 'Amount', 'payment_amount' );
 				$this->render_select_input( $post, 'Currency', 'currency' );
-				$this->render_textarea_input( $post, 'Notes', 'notes', 'Any other details you want to share.' );
+				$this->render_textarea_input( $post, 'Notes', 'general_notes', 'Any other details you want to share.' );
 			?>
 
 			<tr>
@@ -216,7 +224,7 @@ class WCP_Payment_Request {
 
 		<table class="form-table">
 			<?php $this->render_radio_input( $post, 'Payment Method', 'payment_method' ); ?>
-			<?php $this->render_checkbox_input( $post, 'Reimbursing Personal Expense', 'requesting_reimbursement', 'Check this box if you paid for this expense out of pocket. Please attach the original payment support with the vendor attached (if any), and proof of disbursed funds.' ); ?>
+			<?php $this->render_checkbox_input( $post, 'Reimbursing Personal Expense', 'requesting_reimbursement', 'Check this box if you paid for this expense out of pocket. Please attach the original payment support below with the vendor attached (if any), and proof of disbursed funds.' ); ?>
 		</table>
 
 		<table id="payment_method_check_fields" class="form-table payment_method_fields <?php echo 'Check' == $selected_payment_method ? 'active' : 'inactive'; ?>">
@@ -224,7 +232,7 @@ class WCP_Payment_Request {
 		</table>
 
 		<p id="payment_method_credit_card_fields" class="description payment_method_fields <?php echo 'Credit Card' == $selected_payment_method ? 'active' : 'inactive'; ?>">
-			<?php _e( 'Please make sure that you upload an authorization form above, if one is required by the vendor.', 'wordcamporg' ); ?>
+			<?php _e( 'Please make sure that you upload an authorization form below, if one is required by the vendor.', 'wordcamporg' ); ?>
 		</p>
 
 		<table id="payment_method_wire_fields" class="form-table payment_method_fields <?php echo 'Wire' == $selected_payment_method ? 'active' : 'inactive'; ?>">
@@ -234,6 +242,24 @@ class WCP_Payment_Request {
 			<?php $this->render_text_input( $post, 'Beneficiary’s Account Number or IBAN', 'beneficiary_account_number' ); ?>
 			<?php $this->render_text_input( $post, 'Beneficiary’s Name', 'beneficiary_name' ); ?>
 			<?php $this->render_text_input( $post, 'Beneficiary’s Address', 'beneficiary_address' );        // todo multiple ?>
+		</table>
+
+		<?php
+	}
+
+	/**
+	 * Render the Vendor Details metabox
+	 *
+	 * @param WP_Post $post
+	 */
+	public function render_files_metabox( $post ) {
+		wp_nonce_field( 'wcp_files', 'wcp_files_nonce' );
+
+		?>
+
+		<table class="form-table">
+			<?php $this->render_files_input( $post, 'Files', 'files', __( 'Attach supporting documentation including invoices, contracts, or other vendor correspondence. If no supporting documentation is available, please indicate the reason in the notes below.', 'wordcamporg' ) ); ?>
+			<?php $this->render_textarea_input( $post, 'Notes', 'file_notes' ); ?>
 		</table>
 
 		<?php
@@ -446,11 +472,7 @@ class WCP_Payment_Request {
 		?>
 
 		<tr>
-			<th>
-				<label for="<?php echo esc_attr( $name ); ?>">
-					<?php echo esc_html( $label ); ?>:
-				</label>
-			</th>
+			<th><?php echo esc_html( $label ); ?>:</th>
 
 			<td>
 				<?php if ( ! empty( $description ) ) : ?>
@@ -461,13 +483,14 @@ class WCP_Payment_Request {
 					<a href="javascript:;" class="button insert-media add_media">Add files</a>
 				</div>
 
-				<div style="margin-top: 15px; margin-bottom: 0;">
-					<p>Attached files:</p>
-					<ul>
-						<li style="list-style-type: disc; margin-left: 15px;"><a href="">invoice.pdf</a></li>
-						<li style="list-style-type: disc; margin-left: 15px;"><a href="">receipt.pdf</a></li>
-					</ul>
-				</div>
+				<h4>Attached files:</h4>
+
+				<ul>
+					<li style="list-style-type: disc; margin-left: 15px;"><a href="">invoice.pdf</a></li>
+					<li style="list-style-type: disc; margin-left: 15px;"><a href="">receipt.pdf</a></li>
+				</ul>
+
+				<p class="description">New files will appear in the list after you save.</p>
 			</td>
 		</tr>
 
