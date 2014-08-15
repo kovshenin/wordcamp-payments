@@ -125,7 +125,7 @@ class WCP_Payment_Request {
 
 		add_meta_box(
 			'wcp_files',
-			__( 'Attach Files', 'wordcamporg' ),
+			__( 'Attach Supporting Documentation', 'wordcamporg' ),
 			array( $this, 'render_files_metabox' ),
 			self::POST_TYPE,
 			'normal',
@@ -480,7 +480,7 @@ class WCP_Payment_Request {
 				<?php endif; ?>
 
 				<div class="wp-media-buttons">
-					<a href="javascript:;" class="button insert-media add_media">Add files</a>
+					<a href="#" class="button insert-media add_media">Add files</a>
 				</div>
 
 				<h4>Attached files:</h4>

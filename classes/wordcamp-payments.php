@@ -18,7 +18,7 @@ class WordCamp_Payments {
 		wp_register_script(
 			'wordcamp-payments',
 			plugins_url( 'javascript/wordcamp-payments.js', __DIR__ ),
-			array( 'jquery', 'jquery-ui-datepicker' ),
+			array( 'jquery', 'jquery-ui-datepicker', 'media-upload', 'media-views' ),
 			self::VERSION,
 			true
 		);
@@ -50,6 +50,9 @@ class WordCamp_Payments {
 		// todo if on one of our screens
 			wp_enqueue_script( 'wordcamp-payments' );
 			wp_enqueue_style( 'wordcamp-payments' );
+
+			// todo if on ticket edit screen
+				wp_enqueue_media();
 	}
 
 	/**
