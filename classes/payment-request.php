@@ -147,7 +147,7 @@ class WCP_Payment_Request {
 				$this->render_text_input( $post, 'Requester', 'requester', '', '', true );
 				$this->render_select_input( $post, 'WordCamp', 'wordcamp' );
 				$this->render_textarea_input( $post, 'Description', 'description' );
-				$this->render_text_input( $post, 'Requested date for payment/due by', 'due_by', 'Format: ' . date( 'F jS, Y' ), 'date' );
+				$this->render_text_input( $post, 'Requested date for payment/due by', 'due_by', '', 'date' );
 				$this->render_files_input( $post, 'Files', 'files', __( 'Attach supporting documentation including Invoices, Contracts, or other vendor correspondence. If no supporting documentation is available, indicate reason in the notes below.', 'wordcamporg' ) );
 				$this->render_text_input( $post, 'Amount', 'payment_amount' );
 				$this->render_select_input( $post, 'Currency', 'currency' );
@@ -449,7 +449,7 @@ class WCP_Payment_Request {
 
 			case 'due_by':
 				if ( $value = get_post_meta( $post->ID, '_camppayments_due_by', true ) ) {
-					$value = date( 'F jS, Y', $value );
+					$value = date( 'Y-m-d', $value );
 				}
 				break;
 

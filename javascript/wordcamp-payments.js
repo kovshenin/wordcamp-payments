@@ -24,7 +24,9 @@ jQuery( document ).ready( function( $ ) {
 			browserTest.setAttribute( 'type', 'date' );
 
 			if ( 'text' === browserTest.type ) {
-				$( 'body.post-type-wcp_payment_request' ).find( '#post-body' ).find( 'input[type=date]' ).datepicker();
+				$( 'body.post-type-wcp_payment_request' ).find( '#post-body' ).find( 'input[type=date]' ).datepicker( {
+						dateFormat: 'yy-mm-dd'
+				} );
 			}
 		},
 
