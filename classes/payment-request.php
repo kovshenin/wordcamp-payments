@@ -171,11 +171,13 @@ class WCP_Payment_Request {
 					?>
 				</td>
 			</tr>
+
+			<?php $this->render_text_input( $post, 'Other Category', 'other_category_explanation', __( 'Please add details if you selected "Other" in the Category dropdown.', 'wordcamporg' ) ); ?>
 		</table>
 
 		<?php
 
-		// todo If they select other they need to include a note, can we add a required text box if that is the selection?
+		// todo If they select other but don't fill in the explanation, set to draft and display error msg, similar to require_complete_meta_to_publish_wordcamp()
 	}
 
 	/**
@@ -261,7 +263,9 @@ class WCP_Payment_Request {
 				<textarea id="<?php echo esc_attr( $name ); ?>" name="<?php echo esc_attr( $name ); ?>" class="large-text"><?php echo esc_html( $date ); ?></textarea>
 
 				<?php if ( ! empty( $description ) ) : ?>
-					<p class="description"><?php echo esc_html( $description ); ?></p>
+					<label for="<?php echo esc_attr( $name ); ?>">
+						<p class="description"><?php echo esc_html( $description ); ?></p>
+					</label>
 				<?php endif; ?>
 			</td>
 		</tr>
@@ -298,7 +302,7 @@ class WCP_Payment_Request {
 
 					<?php foreach ( $options as $value => $option_label ) : ?>
 						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $value, $selected ); ?>>
-							<?php echo esc_attr( $option_label ); ?>
+							<?php echo esc_html( $option_label ); ?>
 						</option>
 					<?php endforeach; ?>
 				</select>
@@ -416,12 +420,58 @@ class WCP_Payment_Request {
 				/>
 
 				<?php if ( ! empty( $description ) ) : ?>
-					<span class="description"><?php echo esc_html( $description ); ?></span>
+					<label for="<?php echo esc_attr( $name ); ?>">
+						<span class="description"><?php echo esc_html( $description ); ?></span>
+					</label>
 				<?php endif; ?>
 			</td>
 		</tr>
 
 		<?php
+	}
+
+	/**
+	 * Render an upload button and list of uploaded files.
+	 *
+	 * @param WP_Post $post
+	 * @param string $label
+	 * @param string $name
+	 * @param string $description
+	 */
+	protected function render_files_input( $post, $label, $name, $description = '' ) {
+		$files = ''; // get post attachments
+
+		// todo this is just a ui stub w/ hacky inline style and such, redo the right way after get feedback on direction
+
+		?>
+
+		<tr>
+			<th>
+				<label for="<?php echo esc_attr( $name ); ?>">
+					<?php echo esc_html( $label ); ?>:
+				</label>
+			</th>
+
+			<td>
+				<?php if ( ! empty( $description ) ) : ?>
+					<p class="description" style="margin-bottom: 15px;"><?php echo esc_html( $description ); ?></p>
+				<?php endif; ?>
+
+				<div class="wp-media-buttons">
+					<a href="javascript:;" class="button insert-media add_media">Add files</a>
+				</div>
+
+				<div style="margin-top: 15px; margin-bottom: 0;">
+					<p>Attached files:</p>
+					<ul>
+						<li style="list-style-type: disc; margin-left: 15px;"><a href="">invoice.pdf</a></li>
+						<li style="list-style-type: disc; margin-left: 15px;"><a href="">receipt.pdf</a></li>
+					</ul>
+				</div>
+			</td>
+		</tr>
+
+	<?php
 	}
 
 	/**
@@ -471,50 +521,6 @@ class WCP_Payment_Request {
 		}
 
 		return $value;
-	}
-
-	/**
-	 * Render an upload button and list of uploaded files.
-	 *
-	 * @param WP_Post $post
-	 * @param string $label
-	 * @param string $name
-	 * @param string $description
-	 */
-	protected function render_files_input( $post, $label, $name, $description = '' ) {
-		$files = ''; // get post attachments
-
-		// todo this is just a ui stub w/ hacky inline style and such, redo the right way after get feedback on direction
-
-		?>
-
-		<tr>
-			<th>
-				<label for="<?php echo esc_attr( $name ); ?>">
-					<?php echo esc_html( $label ); ?>:
-				</label>
-			</th>
-
-			<td>
-				<?php if ( ! empty( $description ) ) : ?>
-					<p class="description" style="margin-bottom: 15px;"><?php echo esc_html( $description ); ?></p>
-				<?php endif; ?>
-
-				<div class="wp-media-buttons">
-					<a href="javascript:;" class="button insert-media add_media">Add files</a>
-				</div>
-
-				<div style="margin-top: 15px; margin-bottom: 0;">
-					<p>Attached files:</p>
-					<ul>
-						<li style="list-style-type: disc; margin-left: 15px;"><a href="">invoice.pdf</a></li>
-						<li style="list-style-type: disc; margin-left: 15px;"><a href="">receipt.pdf</a></li>
-					</ul>
-				</div>
-			</td>
-		</tr>
-
-		<?php
 	}
 
 	/**
@@ -740,6 +746,7 @@ class WCP_Payment_Request {
 				case 'beneficiary_name':
 				case 'payable_to':
 				case 'vendor_contact_person':
+				case 'other_category_explanation':
 					$safe_value = sanitize_text_field( $unsafe_value );
 					break;
 
