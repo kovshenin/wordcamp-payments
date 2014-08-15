@@ -6,13 +6,26 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		init: function () {
 			$.wordcampPayments.registerEventHandlers();
+			$.wordcampPayments.setupDatePicker();
 		},
 
 		/**
 		 * Registers event handlers
 		 */
-		registerEventHandlers: function () {
+		registerEventHandlers: function() {
 			$( 'input[name=payment_method]' ).change( $.wordcampPayments.togglePaymentMethodFields );
+		},
+
+		/**
+		 * Fallback to the jQueryUI datepicker if the browser doesn't support <input type="date">
+		 */
+		setupDatePicker : function() {
+			var browserTest = document.createElement( 'input' );
+			browserTest.setAttribute( 'type', 'date' );
+
+			if ( 'text' === browserTest.type ) {
+				$( 'body.post-type-wcp_payment_request' ).find( '#post-body' ).find( 'input[type=date]' ).datepicker();
+			}
 		},
 
 		/**
@@ -20,7 +33,7 @@ jQuery( document ).ready( function( $ ) {
 		 *
 		 * @param event
 		 */
-		togglePaymentMethodFields: function ( event ) {
+		togglePaymentMethodFields: function( event ) {
 			event.preventDefault();
 			var active_fields_container = '#' + $( this ).attr( 'id' ) + '_fields';
 

@@ -1,15 +1,4 @@
 <?php
-/*
-Plugin Name: WordCamp Payments
-Plugin URI:  http://wordcamp.org/
-Description: Provides tools for collecting and processing payment requests from WordCamp organizers.
-Author:      tellyworth, iandunn
-Version:     0.1
-*/
-
-if ( ! defined( 'ABSPATH' ) ) {
-	die( 'Access denied.' );
-}
 
 class WordCamp_Payments {
 	const VERSION = '0.1.0';
@@ -18,28 +7,8 @@ class WordCamp_Payments {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->bootstrap();
-
 		add_action( 'admin_enqueue_scripts',  array( $this, 'enqueue_assets' ) );
 		add_action( 'transition_post_status', array( $this, 'notify_central_of_new_requests' ), 10, 3 );
-	}
-
-	/**
-	 * Basic initialization
-	 */
-	protected function bootstrap() {
-		require_once( __DIR__ . '/payment-request.php' );
-		require_once( __DIR__ . '/network-admin-tools.php' );
-
-		if ( is_admin() ) {
-			$GLOBALS['wcp_payment'] = new WCP_Payment_Request();
-		}
-
-		if ( is_network_admin() ) {
-			$GLOBALS['wcp_network_admin_tools'] = new WCP_Network_Admin_Tools();
-		}
-
-		register_activation_hook( __FILE__, array( $GLOBALS['wcp_payment'], 'activate' ) );
 	}
 
 	/**
@@ -48,18 +17,35 @@ class WordCamp_Payments {
 	public function enqueue_assets() {
 		wp_register_script(
 			'wordcamp-payments',
-			plugins_url( 'wordcamp-payments.js', __FILE__ ),
-			array( 'jquery' ),
+			plugins_url( 'javascript/wordcamp-payments.js', __DIR__ ),
+			array( 'jquery', 'jquery-ui-datepicker' ),
 			self::VERSION,
 			true
 		);
 
+		// Can remove this when #18909-core is committed
+		wp_register_style(
+			'jquery-ui',
+			plugins_url( 'css/jquery-ui.min.css', __DIR__ ),
+			array(),
+			'1.11.1'
+		);
+
+		// https://github.com/x-team/wp-jquery-ui-datepicker-skins
+		wp_register_style(
+			'wp-datepicker-skins',
+			plugins_url( 'css/wp-datepicker-skins.css', __DIR__ ),
+			array( 'jquery-ui' ),
+			'1712f05a1c6a76ef0ac0b0a9bf79224e52e461ab'
+		);
+
 		wp_register_style(
 			'wordcamp-payments',
-			plugins_url( 'wordcamp-payments.css', __FILE__ ),
-			array(),
+			plugins_url( 'css/wordcamp-payments.css', __DIR__ ),
+			array( 'wp-datepicker-skins' ),
 			self::VERSION
 		);
+
 
 		// todo if on one of our screens
 			wp_enqueue_script( 'wordcamp-payments' );
@@ -111,9 +97,4 @@ class WordCamp_Payments {
 
 		wp_mail( 'support@wordcamp.org', 'New Payment Request: ' . $post->post_title, $message, $headers );
 	}
-}
-
-if ( is_admin() && in_array( get_current_blog_id(), apply_filters( 'wcp_allowed_site_ids', array( 206 ) ) ) ) {     // testing.wordcamp.org
-	// todo don't run on central
-	$GLOBALS['wordcamp_payments'] = new WordCamp_Payments();
 }
