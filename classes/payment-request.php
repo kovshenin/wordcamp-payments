@@ -539,11 +539,19 @@ class WCP_Payment_Request {
 			),
 		) );
 
+		foreach ( $wordcamp_posts as $post ) {
+			$wordcamp_name = str_replace( 'WordCamp ', '', $post->post_title );
+
+			if ( $wordcamp_date = get_post_meta( $post->ID, 'Start Date (YYYY-mm-dd)', true ) ) {
+				$wordcamp_name .= ' ' . date( 'Y', $wordcamp_date );
+			}
+
+			$wordcamps[ $post->ID ] = $wordcamp_name;
+		}
+
 		restore_current_blog();
 
-		foreach ( $wordcamp_posts as $post ) {
-			$wordcamps[ $post->ID ] = $post->post_title;    // todo include year in title
-		}
+		asort( $wordcamps );
 
 		return $wordcamps;
 	}
