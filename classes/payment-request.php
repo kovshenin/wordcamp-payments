@@ -831,7 +831,6 @@ class WCP_Payment_Request {
 	public function get_columns( $_columns ) {
 		$columns = array(
 			'cb'             => $_columns['cb'],
-			'wordcamp'       => __( 'WordCamp', 'wordcamporg' ),
 			'author'         => __( 'Author' ),
 			'title'          => $_columns['title'],
 			'date'           => $_columns['date'],
@@ -851,7 +850,6 @@ class WCP_Payment_Request {
 	 * @return array
 	 */
 	public function get_sortable_columns( $columns ) {
-		$columns['wordcamp'] = '_camppayments_wordcamp';
 		$columns['due_by']   = '_camppayments_due_by';
 
 		return $columns;
@@ -865,19 +863,6 @@ class WCP_Payment_Request {
 	 */
 	public function render_columns( $column, $post_id ) {
 		switch ( $column ) {
-			case 'wordcamp':
-				if ( $wordcamp_id = get_post_meta( $post_id, '_camppayments_wordcamp', true ) ) {
-					switch_to_blog( BLOG_ID_CURRENT_SITE ); // central.wordcamp.org
-					if ( $wordcamp = get_post( $wordcamp_id ) ) {
-						echo esc_html( $wordcamp->post_title );
-					}
-					restore_current_blog();
-				} else {
-					echo 'None selected';
-				}
-
-				break;
-
 			case 'status':
 				$post = get_post( $post_id );
 				echo esc_html( ucwords( $post->post_status ) );
@@ -917,11 +902,6 @@ class WCP_Payment_Request {
 		$orderby = $query->get( 'orderby' );
 
 		switch( $orderby ) {
-			case '_camppayments_wordcamp':
-				$query->set( 'meta_key', '_camppayments_wordcamp' );    // todo this is sorting on the wordcamp id, not the title. need to use something more robust like `posts_orderby`? maybe just use search for this field instead of sort?
-				$query->set( 'orderby', 'meta_value' );
-				break;
-
 			case '_camppayments_due_by':
 				$query->set( 'meta_key', '_camppayments_due_by' );
 				$query->set( 'orderby', 'meta_value_num' );
