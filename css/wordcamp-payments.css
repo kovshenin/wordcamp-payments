@@ -1,7 +1,26 @@
+/*
+ * Payment Methods
+ */
 .payment_method_fields.active {
 	display: block;
 }
 
 .payment_method_fields.inactive {
 	display: none;
+}
+
+/*
+ * Files
+ */
+#wcp_files .wp-media-buttons {
+	margin-top: 1em;
+}
+
+.wcp_files_list li {
+	list-style-type: disc;
+	margin-left: 15px;
+}
+
+.form-table td p.wcp_no_files_uploaded {
+	margin-bottom: 1em;
 }

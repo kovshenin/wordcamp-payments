@@ -464,9 +464,13 @@ class WCP_Payment_Request {
 	 * @param string $description
 	 */
 	protected function render_files_input( $post, $label, $name, $description = '' ) {
-		$files = ''; // get post attachments
-
-		// todo this is just a ui stub w/ hacky inline style and such, redo the right way after get feedback on direction
+		$files = get_posts( array(
+			'post_parent'    => $post->ID,
+			'post_type'      => 'attachment',
+			'posts_per_page' => -1,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+		) );
 
 		?>
 
@@ -475,25 +479,47 @@ class WCP_Payment_Request {
 
 			<td>
 				<?php if ( ! empty( $description ) ) : ?>
-					<p class="description" style="margin-bottom: 15px;"><?php echo esc_html( $description ); ?></p>
+					<p class="description">
+						<?php echo esc_html( $description ); ?>
+					</p>
 				<?php endif; ?>
 
 				<div class="wp-media-buttons">
-					<a href="#" class="button insert-media add_media">Add files</a>
+					<a href="#" class="button insert-media add_media">
+						<?php _e( 'Add files', 'wordcamporg' ); ?>
+					</a>
 				</div>
 
-				<h4>Attached files:</h4>
 
-				<ul>
-					<li style="list-style-type: disc; margin-left: 15px;"><a href="">invoice.pdf</a></li>
-					<li style="list-style-type: disc; margin-left: 15px;"><a href="">receipt.pdf</a></li>
-				</ul>
+				<h4><?php _e( 'Attached files:', 'wordcamporg' ); ?></h4>
 
-				<p class="description">New files will appear in the list after you save.</p>
+				<?php if ( $files ) : ?>
+
+					<ul class="wcp_files_list">
+						<?php foreach( $files as $file ) : ?>
+							<li>
+							    <a href="<?php echo esc_url( wp_get_attachment_url( $file->ID ) ); ?>">
+								    <?php echo esc_html( wp_basename( $file->guid ) ); ?>
+							    </a>
+						    </li>
+						<?php endforeach; ?>
+					</ul>
+
+				<?php else : ?>
+
+					<p class="wcp_no_files_uploaded">
+						<?php _e( "You haven't uploaded any files yet.", 'wordcamporg' ); ?>
+					</p>
+
+				<?php endif; ?>
+
+				<p class="description">
+					<?php _e( 'New files will appear in the list after you save this request.' ); ?>
+				</p>
 			</td>
 		</tr>
 
-	<?php
+		<?php
 	}
 
 	/**
