@@ -154,7 +154,6 @@ class WCP_Payment_Request {
 			<?php
 				$this->render_text_input( $post, 'Request ID', 'request_id', '', '', true );
 				$this->render_text_input( $post, 'Requester', 'requester', '', '', true );
-				$this->render_select_input( $post, 'WordCamp', 'wordcamp' );
 				$this->render_textarea_input( $post, 'Description', 'description' );
 				$this->render_text_input( $post, 'Requested date for payment/due by', 'due_by', '', 'date' );
 				$this->render_text_input( $post, 'Amount', 'payment_amount' );
@@ -526,10 +525,6 @@ class WCP_Payment_Request {
 				}
 				break;
 
-			case 'wordcamp':
-				$value = $this->get_wordcamps();
-				break;
-
 			case 'currency':
 				$value = $this->get_currencies();
 				break;
@@ -544,45 +539,6 @@ class WCP_Payment_Request {
 		}
 
 		return $value;
-	}
-
-	/**
-	 * Get a list of all (recently/) active WordCamps.
-	 *
-	 * @return array
-	 */
-	protected function get_wordcamps() {
-		switch_to_blog( BLOG_ID_CURRENT_SITE ); // central.wordcamp.org
-
-		$wordcamps      = array();
-		$wordcamp_posts = get_posts( array(
-			'post_type'   => 'wordcamp',
-			'post_status' => array( 'pending', 'publish' ),
-			'numberposts' => -1,
-			'meta_query'  => array(
-				array(
-					'key'     => 'Start Date (YYYY-mm-dd)',
-					'value'   => strtotime( 'now - 1 year' ),
-					'compare' => '>'
-				),
-			),
-		) );
-
-		foreach ( $wordcamp_posts as $post ) {
-			$wordcamp_name = str_replace( 'WordCamp ', '', $post->post_title );
-
-			if ( $wordcamp_date = get_post_meta( $post->ID, 'Start Date (YYYY-mm-dd)', true ) ) {
-				$wordcamp_name .= ' ' . date( 'Y', $wordcamp_date );
-			}
-
-			$wordcamps[ $post->ID ] = $wordcamp_name;
-		}
-
-		restore_current_blog();
-
-		asort( $wordcamps );
-
-		return $wordcamps;
 	}
 
 	/**
@@ -744,10 +700,6 @@ class WCP_Payment_Request {
 	protected function sanitize_save_normal_fields( $post_id ) {
 		foreach ( $_POST as $key => $unsafe_value ) {
 			switch ( $key ) {
-				case 'wordcamp':
-					$safe_value = absint( $unsafe_value );
-					break;
-
 				case 'description':
 				case 'notes':
 					$safe_value = wp_kses( $unsafe_value, wp_kses_allowed_html( 'strip' ) );
