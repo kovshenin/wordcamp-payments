@@ -14,7 +14,8 @@ class WordCamp_Payments {
 	/**
 	 * Enqueue scripts and stylesheets
 	 */
-	public function enqueue_assets() {
+	public function enqueue_assets( $hook ) {
+		// Register our assets
 		wp_register_script(
 			'wordcamp-payments',
 			plugins_url( 'javascript/wordcamp-payments.js', __DIR__ ),
@@ -46,13 +47,17 @@ class WordCamp_Payments {
 			self::VERSION
 		);
 
+		// Enqueue our assets if they're needed on the current screen
+		$current_screen = get_current_screen();
 
-		// todo if on one of our screens
+		if ( in_array( $current_screen->id, array( 'edit-wcp_payment_request', 'wcp_payment_request' ) ) ) {
 			wp_enqueue_script( 'wordcamp-payments' );
 			wp_enqueue_style( 'wordcamp-payments' );
 
-			// todo if on ticket edit screen
+			if ( in_array( $current_screen->id, array( 'wcp_payment_request' ) ) ) {
 				wp_enqueue_media();
+			}
+		}
 	}
 
 	/**
