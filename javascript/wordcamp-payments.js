@@ -25,9 +25,10 @@ jQuery( document ).ready( function( $ ) {
 		togglePaymentMethodFields: function( event ) {
 			event.preventDefault();
 			var active_fields_container = '#' + $( this ).attr( 'id' ) + '_fields';
+			var payment_method_fields   = '.payment_method_fields';
 
-			$( '.payment_method_fields' ).removeClass( 'active' );
-			$( '.payment_method_fields' ).addClass( 'inactive' );
+			$( payment_method_fields   ).removeClass( 'active' );
+			$( payment_method_fields   ).addClass( 'inactive' );
 			$( active_fields_container ).removeClass( 'inactive' );
 			$( active_fields_container ).addClass( 'active' );
 
