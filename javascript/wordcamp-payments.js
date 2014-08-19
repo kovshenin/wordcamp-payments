@@ -41,7 +41,7 @@ jQuery( document ).ready( function( $ ) {
 
 			// Handle results from media manager.
 			frame.on( 'close', function() {
-				// todo attach files to post. do that here, or on php side when post is saved?
+				// todo update list of files
 			} );
 
 			frame.open();

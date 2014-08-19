@@ -15,6 +15,8 @@ class WordCamp_Payments {
 	 * Enqueue scripts and stylesheets
 	 */
 	public function enqueue_assets( $hook ) {
+		global $post;
+
 		// Register our assets
 		wp_register_script(
 			'wordcamp-payments',
@@ -54,8 +56,8 @@ class WordCamp_Payments {
 			wp_enqueue_script( 'wordcamp-payments' );
 			wp_enqueue_style( 'wordcamp-payments' );
 
-			if ( in_array( $current_screen->id, array( 'wcp_payment_request' ) ) ) {
-				wp_enqueue_media();
+			if ( in_array( $current_screen->id, array( 'wcp_payment_request' ) ) && isset( $post->ID ) ) {
+				wp_enqueue_media( array( 'post' => $post->ID ) );
 			}
 		}
 	}
