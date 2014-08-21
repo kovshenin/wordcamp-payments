@@ -17,11 +17,21 @@ class WordCamp_Payments {
 	public function enqueue_assets( $hook ) {
 		global $post;
 
+		// todo setup grunt to concat/minify js and css?
+
 		// Register our assets
 		wp_register_script(
 			'wordcamp-payments',
 			plugins_url( 'javascript/wordcamp-payments.js', __DIR__ ),
 			array( 'jquery', 'jquery-ui-datepicker', 'media-upload', 'media-views' ),
+			self::VERSION,
+			true
+		);
+
+		wp_register_script(
+			'wcp-attached-files',
+			plugins_url( 'javascript/attached-files.js', __DIR__ ),
+			array( 'wordcamp-payments', 'backbone', 'wp-util' ),
 			self::VERSION,
 			true
 		);
@@ -58,7 +68,17 @@ class WordCamp_Payments {
 
 			if ( in_array( $current_screen->id, array( 'wcp_payment_request' ) ) && isset( $post->ID ) ) {
 				wp_enqueue_media( array( 'post' => $post->ID ) );
+				wp_enqueue_script( 'wcp-attached-files' );
 			}
+
+			wp_localize_script(
+				'wordcamp-payments',
+				'wcpLocalizedStrings',		// todo merge into wordcampPayments var
+				array(
+					'uploadModalTitle'  => __( 'Attach Supporting Documentation', 'wordcamporg' ),
+					'uploadModalButton' => __( 'Attach Files', 'wordcamporg' ),
+				)
+			);
 		}
 	}
 

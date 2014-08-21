@@ -1,19 +1,17 @@
 /*
  * Payment Methods
  */
-.payment_method_fields.active {
+.payment_method_fields.active,
+.wcp_no_files_uploaded.active {
 	display: block;
 }
 
-.payment_method_fields.inactive {
-	display: none;
-}
 
 /*
  * Files
  */
-#wcp_files .wp-media-buttons {
-	margin-top: 1em;
+#wcp_files .description {
+	margin-bottom: 1em;
 }
 
 .wcp_files_list li {

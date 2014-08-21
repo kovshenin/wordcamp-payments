@@ -1,4 +1,5 @@
 jQuery( document ).ready( function( $ ) {
+
 	$.wordcampPayments = {
 
 		/**
@@ -14,7 +15,7 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		registerEventHandlers: function() {
 			$( '#wcp_payment_details' ).find( 'input[name=payment_method]' ).change( $.wordcampPayments.togglePaymentMethodFields );
-			$( '#wcp_files' ).find( 'a.add-media' ).click( $.wordcampPayments.showUploadModal );
+			$( '#wcp_files' ).find( 'a.wcp-insert-media' ).click( $.wordcampPayments.showUploadModal );
 		},
 
 		/**
@@ -24,12 +25,13 @@ jQuery( document ).ready( function( $ ) {
 		 */
 		togglePaymentMethodFields: function( event ) {
 			event.preventDefault();
+
 			var active_fields_container = '#' + $( this ).attr( 'id' ) + '_fields';
 			var payment_method_fields   = '.payment_method_fields';
 
 			$( payment_method_fields   ).removeClass( 'active' );
-			$( payment_method_fields   ).addClass( 'inactive' );
-			$( active_fields_container ).removeClass( 'inactive' );
+			$( payment_method_fields   ).addClass( 'hidden' );
+			$( active_fields_container ).removeClass( 'hidden' );
 			$( active_fields_container ).addClass( 'active' );
 
 			// todo make the transition smoother
@@ -37,14 +39,33 @@ jQuery( document ).ready( function( $ ) {
 
 		// Call this from the upload button to initiate the upload frame.
 		showUploadModal : function( event ) {
-			var frame = wp.media();
+			if ( 'undefined' == typeof $.wordcampPayments.fileUploadFrame ) {
+				// Create the frame
+				$.wordcampPayments.fileUploadFrame = wp.media( {
+					title: wcpLocalizedStrings.uploadModalTitle,
+					multiple: true,
+					button: {
+						text: wcpLocalizedStrings.uploadModalButton
+					}
+				} );
 
-			// Handle results from media manager.
-			frame.on( 'close', function() {
-				// todo update list of files
-			} );
+				// Add models to the collection for each selected attachment
+				$.wordcampPayments.fileUploadFrame.on( 'select', function() {
+					var attachments = $.wordcampPayments.fileUploadFrame.state().get( 'selection' ).toJSON();
 
-			frame.open();
+					$.each( attachments, function( index, attachment ) {												// todo if selected an existing file, it isn't attached, so after post is saved it wont be in the list
+						var newFile = new $.wordcampPayments.AttachedFile( {
+							'ID':       attachment.id,
+							'filename': attachment.filename,
+							'url':      attachment.url
+						} );
+
+						$.wordcampPayments.attachedFilesView.collection.add( newFile );
+					} );
+				} );
+			}
+
+			$.wordcampPayments.fileUploadFrame.open();
 			return false;
 		},
 
