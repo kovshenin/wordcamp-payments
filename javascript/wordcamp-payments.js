@@ -70,8 +70,8 @@ jQuery( document ).ready( function( $ ) {
 		},
 
 		/**
-		* Fallback to the jQueryUI datepicker if the browser doesn't support <input type="date">
-		*/
+		 * Fallback to the jQueryUI datepicker if the browser doesn't support <input type="date">
+		 */
 		setupDatePicker : function() {
 			var browserTest = document.createElement( 'input' );
 			browserTest.setAttribute( 'type', 'date' );
