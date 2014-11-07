@@ -50,23 +50,25 @@ jQuery( document ).ready( function( $ ) {
 				} );
 
 				// Add models to the collection for each selected attachment
-				$.wordcampPayments.fileUploadFrame.on( 'select', function() {
-					var attachments = $.wordcampPayments.fileUploadFrame.state().get( 'selection' ).toJSON();
-
-					$.each( attachments, function( index, attachment ) {												// todo if selected an existing file, it isn't attached, so after post is saved it wont be in the list
-						var newFile = new $.wordcampPayments.AttachedFile( {
-							'ID':       attachment.id,
-							'filename': attachment.filename,
-							'url':      attachment.url
-						} );
-
-						$.wordcampPayments.attachedFilesView.collection.add( newFile );
-					} );
-				} );
+				$.wordcampPayments.fileUploadFrame.on( 'select', $.wordcampPayments.addSelectedFilesToCollection );
 			}
 
 			$.wordcampPayments.fileUploadFrame.open();
 			return false;
+		},
+
+		addSelectedFilesToCollection : function() {
+			var attachments = $.wordcampPayments.fileUploadFrame.state().get( 'selection' ).toJSON();
+
+			$.each( attachments, function( index, attachment ) {												// todo if selected an existing file, it isn't attached, so after post is saved it wont be in the list
+				var newFile = new $.wordcampPayments.AttachedFile( {
+					'ID':       attachment.id,
+					'filename': attachment.filename,
+					'url':      attachment.url
+				} );
+
+				$.wordcampPayments.attachedFilesView.collection.add( newFile );
+			} );
 		},
 
 		/**
