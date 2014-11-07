@@ -277,7 +277,7 @@ class WCP_Payment_Request {
 
 		?>
 
-		<tr>
+		<tr id="row-<?php echo esc_attr( str_replace( '_', '-', $name ) ); ?>">
 			<th>
 				<label for="<?php echo esc_attr( $name ); ?>">
 					<?php echo esc_html( $label ); ?>:
@@ -311,7 +311,7 @@ class WCP_Payment_Request {
 
 		?>
 
-		<tr>
+		<tr id="row-<?php echo esc_attr( str_replace( '_', '-', $name ) ); ?>">
 			<th>
 				<label for="<?php echo esc_attr( $name ); ?>">
 					<?php echo esc_html( $label ); ?>:
@@ -350,7 +350,7 @@ class WCP_Payment_Request {
 
 		?>
 
-		<tr>
+		<tr id="row-<?php echo esc_attr( str_replace( '_', '-', $name ) ); ?>">
 			<th>
 				<?php echo esc_html( $label ); ?>:
 			</th>
@@ -388,7 +388,7 @@ class WCP_Payment_Request {
 		$value = $this->get_field_value( $name, $post );
 		?>
 
-		<tr>
+		<tr id="row-<?php echo esc_attr( str_replace( '_', '-', $name ) ); ?>">
 			<th>
 				<label for="<?php echo esc_attr( $name ); ?>">
 					<?php echo esc_html( $label ); ?>:
@@ -427,7 +427,7 @@ class WCP_Payment_Request {
 
 		?>
 
-		<tr>
+		<tr id="row-<?php echo esc_attr( str_replace( '_', '-', $name ) ); ?>">
 			<th>
 				<label for="<?php echo esc_attr( $name ); ?>">
 					<?php echo esc_html( $label ); ?>:
@@ -479,7 +479,7 @@ class WCP_Payment_Request {
 
 		?>
 
-		<tr>
+		<tr id="row-<?php echo esc_attr( str_replace( '_', '-', $name ) ); ?>">
 			<th><?php echo esc_html( $label ); ?>:</th>
 
 			<td>
