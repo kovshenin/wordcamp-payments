@@ -78,7 +78,9 @@ jQuery( document ).ready( function( $ ) {
 
 			if ( 'text' === browserTest.type ) {
 				$( '#wcp_general_info' ).find( 'input[type=date]' ).datepicker( {
-					dateFormat: 'yy-mm-dd'
+					dateFormat: 'yy-mm-dd',
+					changeMonth: true,
+					changeYear:  true
 				} );
 			}
 		}
