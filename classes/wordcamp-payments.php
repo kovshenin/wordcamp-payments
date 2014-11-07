@@ -36,26 +36,10 @@ class WordCamp_Payments {
 			true
 		);
 
-		// Can remove this when #18909-core is committed
-		wp_register_style(
-			'jquery-ui',
-			plugins_url( 'css/jquery-ui.min.css', __DIR__ ),
-			array(),
-			'1.11.1'
-		);
-
-		// https://github.com/x-team/wp-jquery-ui-datepicker-skins
-		wp_register_style(
-			'wp-datepicker-skins',
-			plugins_url( 'css/wp-datepicker-skins.css', __DIR__ ),
-			array( 'jquery-ui' ),
-			'1712f05a1c6a76ef0ac0b0a9bf79224e52e461ab'
-		);
-
 		wp_register_style(
 			'wordcamp-payments',
 			plugins_url( 'css/wordcamp-payments.css', __DIR__ ),
-			array( 'wp-datepicker-skins' ),
+			array( 'jquery-ui', 'wp-datepicker-skins' ),
 			self::VERSION
 		);
 
