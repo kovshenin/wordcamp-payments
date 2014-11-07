@@ -11,7 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
 }
 
-// todo don't run on central
 if ( is_admin() && in_array( get_current_blog_id(), apply_filters( 'wcp_allowed_site_ids', array( 206 ) ) ) ) {     // testing.wordcamp.org
 	require_once( __DIR__ . '/classes/wordcamp-payments.php' );
 	require_once( __DIR__ . '/classes/payment-request.php' );
