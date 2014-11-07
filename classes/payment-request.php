@@ -490,7 +490,7 @@ class WCP_Payment_Request {
 				<?php endif; ?>
 
 				<p>
-					<a class="button wcp-insert-media">
+					<a class="button wcp-insert-media" role="button">
 						<?php _e( 'Add files', 'wordcamporg' ); ?>
 					</a>
 				</p>
