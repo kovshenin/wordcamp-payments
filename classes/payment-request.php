@@ -1,5 +1,8 @@
 <?php
 
+/*
+ * Create the Payment Request post type and associated functionality
+ */
 class WCP_Payment_Request {
 	const POST_TYPE = 'wcp_payment_request';
 
