@@ -151,41 +151,7 @@ class WCP_Payment_Request {
 			$assigned_category = $assigned_category[0]->term_id;
 		}
 
-		?>
-
-		<table class="form-table">
-			<?php
-				$this->render_text_input( $post, 'Request ID', 'request_id', '', '', true );
-				$this->render_text_input( $post, 'Requester', 'requester', '', '', true );
-				$this->render_textarea_input( $post, 'Description', 'description' );
-				$this->render_text_input( $post, 'Requested date for payment/due by', 'due_by', '', 'date' );
-				$this->render_text_input( $post, 'Amount', 'payment_amount' );
-				$this->render_select_input( $post, 'Currency', 'currency' );
-				$this->render_textarea_input( $post, 'Notes', 'general_notes', 'Any other details you want to share.' );
-			?>
-
-			<tr>
-				<th>Category</th>
-				<td>
-					<?php
-						wp_dropdown_categories( array(
-							'show_option_none' => '-- Select a Category --',
-							'option_none_value' => 'null',
-
-							'orderby'    => 'title',
-							'hide_empty' => false,
-							'selected'   => $assigned_category,
-							'name'       => 'payment_category',
-							'taxonomy'   => 'payment-category',
-						) );
-					?>
-				</td>
-			</tr>
-
-			<?php $this->render_text_input( $post, 'Other Category', 'other_category_explanation', __( 'Please add details if you selected "Other" in the Category dropdown.', 'wordcamporg' ) ); ?>
-		</table>
-
-		<?php
+		require_once( dirname( __DIR__ ) . '/views/payment-request/metabox-general.php' );
 
 		// todo If they select other but don't fill in the explanation, set to draft and display error msg, similar to require_complete_meta_to_publish_wordcamp()
 	}
@@ -198,19 +164,7 @@ class WCP_Payment_Request {
 	public function render_vendor_metabox( $post ) {
 		wp_nonce_field( 'vendor_details', 'vendor_details_nonce' );
 
-		echo '<table class="form-table">';
-
-		$this->render_text_input( $post, 'Vendor Name', 'vendor_name' );
-		$this->render_text_input( $post, 'Contact Person', 'vendor_contact_person' );
-		$this->render_text_input( $post, 'Phone Number', 'vendor_phone_number', '', 'tel' );
-		$this->render_text_input( $post, 'Email Address', 'vendor_email_address', '', 'email' );
-		$this->render_text_input( $post, 'Street Address', 'vendor_street_address' );
-		$this->render_text_input( $post, 'City', 'vendor_city' );
-		$this->render_text_input( $post, 'State / Province', 'vendor_state' );
-		$this->render_text_input( $post, 'ZIP / Postal Code', 'vendor_zip_code' );
-		$this->render_text_input( $post, 'Country', 'vendor_country' );
-
-		echo '</table>';
+		require_once( dirname( __DIR__ ) . '/views/payment-request/metabox-vendor.php' );
 	}
 
 	/**
@@ -222,31 +176,7 @@ class WCP_Payment_Request {
 		wp_nonce_field( 'payment_details', 'payment_details_nonce' );
 		$selected_payment_method = get_post_meta( $post->ID, '_camppayments_payment_method', true );
 
-		?>
-
-		<table class="form-table">
-			<?php $this->render_radio_input( $post, 'Payment Method', 'payment_method' ); ?>
-			<?php $this->render_checkbox_input( $post, 'Reimbursing Personal Expense', 'requesting_reimbursement', 'Check this box if you paid for this expense out of pocket. Please attach the original payment support below with the vendor attached (if any), and proof of disbursed funds.' ); ?>
-		</table>
-
-		<table id="payment_method_check_fields" class="form-table payment_method_fields <?php echo 'Check' == $selected_payment_method ? 'active' : 'hidden'; ?>">
-			<?php $this->render_text_input( $post, 'Payable To', 'payable_to' ); ?>
-		</table>
-
-		<p id="payment_method_credit_card_fields" class="description payment_method_fields <?php echo 'Credit Card' == $selected_payment_method ? 'active' : 'hidden'; ?>">
-			<?php _e( 'Please make sure that you upload an authorization form below, if one is required by the vendor.', 'wordcamporg' ); ?>
-		</p>
-
-		<table id="payment_method_wire_fields" class="form-table payment_method_fields <?php echo 'Wire' == $selected_payment_method ? 'active' : 'hidden'; ?>">
-			<?php $this->render_text_input( $post, 'Beneficiary’s Bank', 'bank_name' ); ?>
-			<?php $this->render_text_input( $post, 'Beneficiary’s Bank Address', 'bank_address' );   // todo multiple fields ?>
-			<?php $this->render_text_input( $post, 'Beneficiary’s Bank SWIFT BIC', 'bank_bic' ); ?>
-			<?php $this->render_text_input( $post, 'Beneficiary’s Account Number or IBAN', 'beneficiary_account_number' ); ?>
-			<?php $this->render_text_input( $post, 'Beneficiary’s Name', 'beneficiary_name' ); ?>
-			<?php $this->render_text_input( $post, 'Beneficiary’s Address', 'beneficiary_address' );        // todo multiple ?>
-		</table>
-
-		<?php
+		require_once( dirname( __DIR__ ) . '/views/payment-request/metabox-payment.php' );
 	}
 
 	/**
@@ -257,14 +187,7 @@ class WCP_Payment_Request {
 	public function render_files_metabox( $post ) {
 		wp_nonce_field( 'wcp_files', 'wcp_files_nonce' );
 
-		?>
-
-		<table class="form-table">
-			<?php $this->render_files_input( $post, 'Files', 'files', __( 'Attach supporting documentation including invoices, contracts, or other vendor correspondence. If no supporting documentation is available, please indicate the reason in the notes below.', 'wordcamporg' ) ); ?>
-			<?php $this->render_textarea_input( $post, 'Notes', 'file_notes' ); ?>
-		</table>
-
-		<?php
+		require_once( dirname( __DIR__ ) . '/views/payment-request/metabox-files.php' );
 	}
 
 	/**
@@ -278,27 +201,7 @@ class WCP_Payment_Request {
 	protected function render_textarea_input( $post, $label, $name, $description = '' ) {
 		$date = get_post_meta( $post->ID, '_camppayments_' . $name, true );
 
-		?>
-
-		<tr id="row-<?php echo esc_attr( str_replace( '_', '-', $name ) ); ?>">
-			<th>
-				<label for="<?php echo esc_attr( $name ); ?>">
-					<?php echo esc_html( $label ); ?>:
-				</label>
-			</th>
-
-			<td>
-				<textarea id="<?php echo esc_attr( $name ); ?>" name="<?php echo esc_attr( $name ); ?>" class="large-text"><?php echo esc_html( $date ); ?></textarea>
-
-				<?php if ( ! empty( $description ) ) : ?>
-					<label for="<?php echo esc_attr( $name ); ?>">
-						<p class="description"><?php echo esc_html( $description ); ?></p>
-					</label>
-				<?php endif; ?>
-			</td>
-		</tr>
-
-		<?php
+		require( dirname( __DIR__ ) . '/views/payment-request/input-textarea.php' );
 	}
 
 	/**
@@ -312,32 +215,7 @@ class WCP_Payment_Request {
 		$selected = get_post_meta( $post->ID, '_camppayments_' . $name, true );
 		$options  = $this->get_field_value( $name, $post );
 
-		?>
-
-		<tr id="row-<?php echo esc_attr( str_replace( '_', '-', $name ) ); ?>">
-			<th>
-				<label for="<?php echo esc_attr( $name ); ?>">
-					<?php echo esc_html( $label ); ?>:
-				</label>
-			</th>
-
-			<td>
-				<select id="<?php echo esc_attr( $name ); ?>" name="<?php echo esc_attr( $name ); ?>">
-					<option value="null-select-one">
-						<?php printf( __( 'Select a %s', 'wordcamporg' ), $label ); ?>
-					</option>
-					<option value="null-separator1"></option>
-
-					<?php foreach ( $options as $value => $option_label ) : ?>
-						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $value, $selected ); ?>>
-							<?php echo esc_html( $option_label ); ?>
-						</option>
-					<?php endforeach; ?>
-				</select>
-			</td>
-		</tr>
-
-		<?php
+		require( dirname( __DIR__ ) . '/views/payment-request/input-select.php' );
 	}
 
 	/**
@@ -351,33 +229,7 @@ class WCP_Payment_Request {
 		$selected = get_post_meta( $post->ID, '_camppayments_' . $name, true );
 		$options  = $this->get_field_value( $name, $post );
 
-		?>
-
-		<tr id="row-<?php echo esc_attr( str_replace( '_', '-', $name ) ); ?>">
-			<th>
-				<?php echo esc_html( $label ); ?>:
-			</th>
-
-			<td>
-				<?php foreach ( $options as $option ) : ?>
-					<?php $option_name = $name . '_' . sanitize_title_with_dashes( str_replace( ' ', '_', $option ) ); ?>
-
-					<input
-						type="radio"
-						id="<?php echo esc_attr( $option_name ); ?>"
-						name="<?php echo esc_attr( $name ); ?>"
-						value="<?php echo esc_attr( $option ); ?>"
-						<?php checked( $option, $selected ); ?>
-					/>
-
-					<label for="<?php echo esc_attr( $option_name ); ?>">
-						<?php echo esc_html( $option ); ?>:
-					</label>
-				<?php endforeach; ?>
-			</td>
-		</tr>
-
-		<?php
+		require( dirname( __DIR__ ) . '/views/payment-request/input-radio.php' );
 	}
 
 	/**
@@ -389,33 +241,8 @@ class WCP_Payment_Request {
 	 */
 	protected function render_checkbox_input( $post, $label, $name, $description = '' ) {
 		$value = $this->get_field_value( $name, $post );
-		?>
 
-		<tr id="row-<?php echo esc_attr( str_replace( '_', '-', $name ) ); ?>">
-			<th>
-				<label for="<?php echo esc_attr( $name ); ?>">
-					<?php echo esc_html( $label ); ?>:
-				</label>
-			</th>
-
-			<td>
-				<input
-					type="checkbox"
-					id="<?php echo esc_attr( $name ); ?>"
-					name="<?php echo esc_attr( $name ); ?>"
-					value="<?php echo esc_attr( $name ); ?>"
-				    <?php checked( $value, $name ); ?>
-					/>
-
-				<?php if ( ! empty( $description ) ) : ?>
-					<label for="<?php echo esc_attr( $name ); ?>">
-						<span class="description"><?php echo esc_html( $description ); ?></span>
-					</label>
-				<?php endif; ?>
-			</td>
-		</tr>
-
-		<?php
+		require( dirname( __DIR__ ) . '/views/payment-request/input-checkbox.php' );
 	}
 
 	/**
@@ -428,34 +255,7 @@ class WCP_Payment_Request {
 	protected function render_text_input( $post, $label, $name, $description = '', $variant = 'text', $readonly = false ) {
 		$value = $this->get_field_value( $name, $post );
 
-		?>
-
-		<tr id="row-<?php echo esc_attr( str_replace( '_', '-', $name ) ); ?>">
-			<th>
-				<label for="<?php echo esc_attr( $name ); ?>">
-					<?php echo esc_html( $label ); ?>:
-				</label>
-			</th>
-
-			<td>
-				<input
-					type="<?php echo esc_attr( $variant ); ?>"
-					id="<?php echo esc_attr( $name ); ?>"
-					name="<?php echo esc_attr( $name ); ?>"
-					value="<?php echo esc_attr( $value ); ?>"
-					<?php if ( $readonly ) { echo 'readonly="readonly"'; } ?>
-					class="regular-text"
-				/>
-
-				<?php if ( ! empty( $description ) ) : ?>
-					<label for="<?php echo esc_attr( $name ); ?>">
-						<span class="description"><?php echo esc_html( $description ); ?></span>
-					</label>
-				<?php endif; ?>
-			</td>
-		</tr>
-
-		<?php
+		require( dirname( __DIR__ ) . '/views/payment-request/input-text.php' );
 	}
 
 	/**
@@ -480,41 +280,7 @@ class WCP_Payment_Request {
 			$file->url      = wp_get_attachment_url( $file->ID );
 		}
 
-		?>
-
-		<tr id="row-<?php echo esc_attr( str_replace( '_', '-', $name ) ); ?>">
-			<th><?php echo esc_html( $label ); ?>:</th>
-
-			<td>
-				<?php if ( ! empty( $description ) ) : ?>
-					<p class="description">
-						<?php echo esc_html( $description ); ?>
-					</p>
-				<?php endif; ?>
-
-				<p>
-					<a class="button wcp-insert-media" role="button">
-						<?php _e( 'Add files', 'wordcamporg' ); ?>
-					</a>
-				</p>
-
-				<h4><?php _e( 'Attached files:', 'wordcamporg' ); ?></h4>
-
-				<ul class="wcp_files_list"></ul>
-
-				<p class="wcp_no_files_uploaded <?php echo $files ? 'hidden' : 'active'; ?>">
-					<?php _e( "You haven't uploaded any files yet.", 'wordcamporg' ); ?>
-				</p>
-
-				<script type="text/html" id="tmpl-wcp-attached-file">
-					<a href="{{ data.url }}">{{ data.filename }}</a>
-				</script>
-
-				<?php wp_localize_script( 'wcp-attached-files', 'wcpAttachedFiles', $files ); // todo merge into wordcampPayments var ?>
-			</td>
-		</tr>
-
-		<?php
+		require( dirname( __DIR__ ) . '/views/payment-request/input-files.php' );
 	}
 
 	/**
