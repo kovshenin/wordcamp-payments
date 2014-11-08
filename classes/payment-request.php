@@ -488,7 +488,8 @@ class WCP_Payment_Request {
 		foreach ( $_POST as $key => $unsafe_value ) {
 			switch ( $key ) {
 				case 'description':
-				case 'notes':
+				case 'general_notes':
+				case 'file_notes':
 					$safe_value = wp_kses( $unsafe_value, wp_kses_allowed_html( 'strip' ) );
 					break;
 
